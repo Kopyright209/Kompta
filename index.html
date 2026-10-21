@@ -2,309 +2,464 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="theme-color" content="#111827" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#26222F" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="apple-mobile-web-app-title" content="Simu Cash Flow" />
-<title>Simulateur cash flow & fiscalité — Vincennes / Aix</title>
+<title>Simulateur cash flow &amp; fiscalité — Vincennes / Aix</title>
 <style>
   :root {
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    color: #111827;
-    background: #f6f7f9;
+    font-family: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #26222F;
+    background: #FBF8F2;
+    --bg: #FBF8F2; --ink: #26222F; --muted: #7A7590; --card: #FFFFFF; --line: #ECE6DB;
+    --red: #E84855; --yellow: #F5A623; --blue: #3E63DD; --purple: #8B5CF6; --green: #0FA97C;
   }
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
   body { margin: 0; }
-  .wrap { max-width: 1050px; margin: 0 auto; padding: 24px 16px 48px; }
-  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-top: 20px; }
-  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-top: 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-  .kpi { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 14px 16px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-  .kpi .lab { font-size: 12px; color: #6b7280; }
-  .kpi .val { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 2px; }
-  .kpi .sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
-  h1 { font-size: 22px; margin: 0; }
-  h2 { font-size: 15px; margin: 0 0 12px; }
-  .header { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 10px; }
-  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; align-items: start; }
-  .grid3 .card { margin-top: 0; height: 100%; }
-  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .field { display: flex; flex-direction: column; gap: 4px; }
-  .field label { font-size: 11.5px; color: #6b7280; }
-  .field input, .field select {
-    padding: 7px 9px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;
-    font-variant-numeric: tabular-nums; background: #fff; width: 100%;
-  }
-  .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px; }
-  .switch-row .t { font-size: 13.5px; font-weight: 500; }
-  .switch-row .s { font-size: 11.5px; color: #6b7280; }
-  .btn { display: inline-block; padding: 9px 16px; border-radius: 8px; border: 1px solid #d1d5db; background: #fff; font-size: 14px; cursor: pointer; }
-  .btn:hover { background: #f3f4f6; }
-  .btn.primary { background: #111827; color: #fff; border-color: #111827; }
-  .btn.primary:hover { background: #1f2937; }
-  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
-  th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0f1f3; }
-  th { font-size: 12px; color: #6b7280; font-weight: 600; }
-  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-  tr.total td { font-weight: 700; }
-  .pos { color: #15803d; }
-  .neg { color: #b91c1c; }
-  .bars { display: flex; flex-direction: column; gap: 7px; }
-  .bar-row { display: grid; grid-template-columns: 130px 1fr 86px; align-items: center; gap: 8px; font-size: 12.5px; }
-  .bar-track { background: #f0f1f3; border-radius: 5px; height: 16px; position: relative; overflow: hidden; }
-  .bar-fill { position: absolute; top: 0; height: 16px; border-radius: 5px; }
-  .bar-fill.pos { left: 50%; background: #22c55e; }
-  .bar-fill.neg { right: 50%; background: #ef4444; }
-  .bar-axis { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #9ca3af; }
-  .bar-val { text-align: right; font-variant-numeric: tabular-nums; color: #374151; }
-  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #eef2ff; color: #3730a3; font-weight: 600; }
-  .badge.green { background: #dcfce7; color: #166534; }
-  .badge.red { background: #fee2e2; color: #991b1b; }
-  .note { font-size: 11.5px; color: #6b7280; margin-top: 10px; line-height: 1.5; }
-  .test-line { font-size: 13px; padding: 2px 0; }
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: none; align-items: center; justify-content: center; z-index: 50; padding: 16px; }
-  .modal-bg.on { display: flex; }
-  .modal { background: #fff; border-radius: 12px; padding: 18px; max-width: 760px; width: 100%; }
-  #csv-out { width: 100%; height: 300px; font-family: ui-monospace, monospace; font-size: 11.5px; padding: 8px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; }
-  details summary { cursor: pointer; font-size: 14px; font-weight: 600; }
-  svg text { font-size: 10px; fill: #6b7280; }
+  .app { max-width: 620px; margin: 0 auto; }
 
-  /* ===== Steppers & sliders (mobile) ===== */
-  .stepper { display: flex; gap: 6px; align-items: stretch; }
-  .stepper button { flex: 0 0 40px; border: 1px solid #d1d5db; border-radius: 8px; background: #f9fafb; font-size: 18px; font-weight: 600; color: #374151; cursor: pointer; }
-  .stepper button:active { background: #111827; color: #fff; }
-  .stepper input { flex: 1; min-width: 0; }
-  .slider { width: 100%; accent-color: #111827; height: 28px; margin: 2px 0; }
-  .lib-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; align-items: start; }
-  .lib-grid h3 { font-size: 14px; margin: 0 0 10px; }
-  input[type=number], input[type=range], select { font-size: 16px; }
-  .range-row { display: flex; flex-direction: column; gap: 4px; }
-  @media (max-width: 640px) {
-    .wrap { padding: 14px 10px 40px; }
-    h1 { font-size: 18px; }
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .kpi .val { font-size: 18px; }
-    .grid3 { grid-template-columns: 1fr; }
-    .bar-row { grid-template-columns: 84px 1fr 64px; font-size: 11px; gap: 5px; }
-    .card { padding: 12px; border-radius: 10px; }
-    .header { flex-direction: column; align-items: stretch; }
-    .header .btn { width: 100%; }
-    .modal { padding: 12px; }
-  }
-  @media (max-width: 420px) {
-    .fields { grid-template-columns: 1fr; }
+  /* ===== En-tête sombre ===== */
+  .hdr { background: #26222F; color: #fff; padding: 14px 14px 12px; }
+  .logo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 14.5px; font-weight: 700; padding: 0 2px; }
+  .logo .sub { width: 100%; font-size: 10.5px; color: #A9A3C2; font-weight: 400; margin-top: 2px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .d1 { background: var(--red); } .d2 { background: var(--yellow); } .d3 { background: var(--blue); }
+  .scen-box { margin-top: 10px; }
+  .scen-box summary { cursor: pointer; font-size: 12.5px; font-weight: 700; color: #fff; padding: 10px 12px; background: #362F49; border-radius: 10px; list-style: none; }
+  .scen-box summary::-webkit-details-marker { display: none; }
+  .scen-box summary::after { content: "▾"; float: right; }
+  .scen-box[open] summary::after { content: "▴"; }
+  .scen { display: flex; flex-direction: column; gap: 7px; padding-top: 10px; }
+  .scen-title { font-size: 10px; font-weight: 700; color: #A9A3C2; letter-spacing: .07em; padding: 0 2px; }
+  .scen select, .scen input[type=text] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #4A4360; background: #362F49; color: #fff; font-size: 16px; font-family: inherit; }
+  .scen select:focus-visible, .scen input:focus-visible { outline: 2px solid var(--yellow); outline-offset: 1px; }
+  .scen .btn { padding: 11px 12px; font-size: 12.5px; border-radius: 10px; }
+  .scen .btn.grad { width: 100%; }
+  .scen-row { display: flex; gap: 6px; }
+  .scen-row .btn { flex: 1; }
+  .scen-status { font-size: 10.5px; color: #8F8AA6; line-height: 1.4; padding: 0 2px; }
+  .scen .btn.primary { width: 100%; background: #fff; color: #26222F; border-color: #fff; margin-top: 2px; }
+  .tiny { font-size: 10px; color: #8F8AA6; line-height: 1.4; padding: 0 2px; }
+
+  /* ===== Barre KPI défilante ===== */
+  .top { position: sticky; top: 0; z-index: 30; background: rgba(251,248,242,.96); backdrop-filter: blur(8px); display: flex; gap: 8px; overflow-x: auto; padding: 10px 12px; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+  .top::-webkit-scrollbar { display: none; }
+  .chip { flex: 0 0 auto; min-width: 148px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 8px 11px; box-shadow: 0 1px 2px rgba(38,34,47,.05); }
+  .chip .lab { font-size: 9.5px; color: var(--muted); font-weight: 700; letter-spacing: .02em; }
+  .chip .val { font-size: 15.5px; font-weight: 700; font-variant-numeric: tabular-nums; margin-top: 1px; white-space: nowrap; }
+  .chip .sub { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chip.big .val { font-size: 17px; }
+
+  /* ===== Pages ===== */
+  .pages { padding: 14px 12px 100px; }
+  .page { display: none; }
+  .page.on { display: block; animation: fade .18s; }
+  @keyframes fade { from { opacity: .35; } to { opacity: 1; } }
+  h1.pg { font-size: 15.5px; margin: 2px 0 12px; }
+  .pos { color: #0B7A57; } .neg { color: #C22030; }
+
+  /* ===== Cartes ===== */
+  .cols { display: grid; grid-template-columns: 1fr; gap: 14px; align-items: start; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin-bottom: 14px; box-shadow: 0 1px 3px rgba(38,34,47,.05); }
+  h2 { font-size: 13.5px; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+  h2 .hdot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+  .note { font-size: 11px; color: var(--muted); margin-top: 10px; line-height: 1.55; }
+
+  /* ===== Tables budget ===== */
+  .bt { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  .bt td { padding: 5px 2px; border-bottom: 1px solid #F4F0E8; vertical-align: middle; }
+  .bt input { width: 88px; text-align: right; padding: 7px 6px; border: 1px solid var(--line); border-radius: 8px; font-size: 16px; font-variant-numeric: tabular-nums; background: #FCFBF8; font-family: inherit; }
+  .bt input:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .bt input[readonly] { background: #EFECE4; color: #7A7590; }
+  .bt td.n { text-align: right; }
+  .bt tr.tot td { font-weight: 700; border-top: 2px solid #DDD6C9; border-bottom: 0; }
+  .bt tr.tot.rev td { background: #EFF3FE; }
+  .bt tr.tot.fix td { background: #FDEEEE; }
+  .bt tr.tot.ann td { background: #FEF4E2; }
+  .bt tr.tot.cat td { background: #F3EDFE; }
+  .bt .sub { font-size: 10px; color: var(--muted); line-height: 1.35; }
+  .syn-line { display: flex; justify-content: space-between; gap: 8px; padding: 8px 2px; font-size: 12.5px; border-bottom: 1px solid #F4F0E8; }
+  .syn-line b { font-variant-numeric: tabular-nums; text-align: right; }
+  .syn-line.hl { font-weight: 700; background: #EFF3FE; border-radius: 8px; padding: 10px 10px; border-bottom: 0; margin-top: 4px; }
+  .syn-line.hl.red { background: #FDEEEE; }
+
+  /* ===== Champs ===== */
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 11px; color: var(--muted); font-weight: 600; }
+  .field input, .field select { padding: 10px 10px; border: 1px solid var(--line); border-radius: 10px; font-size: 16px; font-variant-numeric: tabular-nums; background: #FCFBF8; width: 100%; font-family: inherit; min-height: 42px; }
+  .field input:focus-visible, .field select:focus-visible { outline: 2px solid var(--blue); outline-offset: 1px; }
+  .switch-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 11px; background: #FCFBF8; }
+  .switch-row .t { font-size: 12px; font-weight: 600; }
+  .switch-row .s { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .switch-row input { width: 34px; height: 20px; accent-color: var(--purple); }
+
+  /* ===== KPI chips dans pages ===== */
+  .kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .kpi-grid .chip { min-width: 0; padding: 8px 10px; }
+  .kpi-grid .chip .val { font-size: 14.5px; }
+
+  /* ===== Boutons ===== */
+  .btn { display: inline-block; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-size: 13px; cursor: pointer; font-family: inherit; font-weight: 600; min-height: 42px; }
+  .btn.primary { background: #26222F; color: #fff; border-color: #26222F; }
+  .btn.grad { background: linear-gradient(90deg, var(--red), var(--purple)); color: #fff; border: 0; }
+
+  /* ===== Badges / alertes ===== */
+  .badge { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 999px; background: #EEF2FF; color: #3730A3; font-weight: 700; }
+  .badge.green { background: #DCF7ED; color: #0B7A57; }
+  .badge.red { background: #FDE2E4; color: #991B1B; }
+  .warn { display: none; margin-top: 10px; padding: 10px 12px; border-radius: 10px; background: #FDE2E4; color: #991B1B; font-size: 12px; font-weight: 600; }
+  .warn.on { display: block; }
+  .hide { display: none !important; }
+
+  /* ===== Sliders ===== */
+  .range-row { display: grid; grid-template-columns: 1fr 92px; gap: 8px; align-items: center; margin: 2px 0 8px; }
+  .range-row input[type=range] { width: 100%; accent-color: var(--purple); height: 32px; }
+  .range-row input[type=number] { padding: 8px 8px; border: 1px solid var(--line); border-radius: 9px; font-size: 16px; text-align: right; background: #FCFBF8; font-family: inherit; min-height: 42px; }
+
+  /* ===== Résultats ===== */
+  table.gen { border-collapse: collapse; width: 100%; font-size: 12px; }
+  table.gen th, table.gen td { text-align: left; padding: 7px 4px; border-bottom: 1px solid #F4F0E8; }
+  table.gen th { font-size: 10.5px; color: var(--muted); font-weight: 700; }
+  table.gen td.num, table.gen th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  table.gen tr.total td { font-weight: 700; border-top: 2px solid #DDD6C9; }
+  .bars { display: flex; flex-direction: column; gap: 6px; }
+  .bar-row { display: grid; grid-template-columns: 104px 1fr 72px; align-items: center; gap: 6px; font-size: 11.5px; }
+  .bar-track { background: #F1EDE4; border-radius: 5px; height: 15px; position: relative; overflow: hidden; }
+  .bar-fill { position: absolute; top: 0; height: 15px; border-radius: 5px; }
+  .bar-fill.pos { left: 50%; background: var(--green); }
+  .bar-fill.neg { right: 50%; background: var(--red); }
+  .bar-axis { position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #C9C2B2; }
+  .bar-val { text-align: right; font-variant-numeric: tabular-nums; color: #4B4658; }
+  svg text { font-size: 10px; fill: #7A7590; }
+  details summary { cursor: pointer; font-size: 13px; font-weight: 700; padding: 4px 0; }
+  .test-line { font-size: 11.5px; padding: 2px 0; }
+
+  /* ===== Modal CSV ===== */
+  .modal-bg { position: fixed; inset: 0; background: rgba(38,34,47,.45); display: none; align-items: center; justify-content: center; z-index: 50; padding: 12px; }
+  .modal-bg.on { display: flex; }
+  .modal { background: #fff; border-radius: 16px; padding: 14px; max-width: 760px; width: 100%; max-height: 90vh; overflow: auto; }
+  #csv-out { width: 100%; height: 34vh; font-family: ui-monospace, monospace; font-size: 11px; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: #FCFBF8; }
+  .modal .btn { flex: 1; }
+
+  /* ===== Navigation basse ===== */
+  .bnav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 620px; background: #26222F; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; padding: 6px 8px calc(6px + env(safe-area-inset-bottom, 0px)); z-index: 40; border-top: 1px solid #3B3550; }
+  .nav-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; background: none; border: 0; border-radius: 12px; color: #CFCADF; padding: 7px 2px; font-size: 10px; cursor: pointer; font-family: inherit; }
+  .nav-btn .ic { font-size: 17px; line-height: 1; }
+  .nav-btn.act { background: #fff; color: #26222F; font-weight: 700; }
+
+  @media (min-width: 640px) { .pages { padding-bottom: 40px; } }
+  @media print {
+    .hdr, .top, .bnav, .btn, .modal-bg { display: none !important; }
+    .page { display: block !important; }
+    body { background: #fff; }
+    .card { break-inside: avoid; box-shadow: none; }
   }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="header">
-    <div>
-      <h1>Simulateur cash flow & fiscalité</h1>
-      <div style="font-size:13px;color:#6b7280;margin-top:2px;">Famille de 4 — Vincennes (location) / Aix-en-Provence (location)</div>
+<div class="app">
+  <header class="hdr">
+    <div class="logo">
+      <span class="dot d1"></span><span class="dot d2"></span><span class="dot d3"></span>
+      Simu Cash Flow
+      <span class="sub">Famille de 4 — Vincennes / Aix</span>
     </div>
-    <button class="btn primary" id="btn-export">Exporter CSV (Excel)</button>
-  </div>
-
-  <div class="kpi-grid">
-    <div class="kpi"><div class="lab">Cash flow mensuel</div><div class="val" id="kpi-solde">—</div><div class="sub" id="kpi-solde-sub">—</div></div>
-    <div class="kpi"><div class="lab">Impôts (IR + PS) / an</div><div class="val" id="kpi-impots">—</div><div class="sub" id="kpi-irps">—</div></div>
-    <div class="kpi"><div class="lab">Revenu net imposable</div><div class="val" id="kpi-rni">—</div><div class="sub" id="kpi-parts">—</div></div>
-    <div class="kpi"><div class="lab" id="kpi-ep-lab">Épargne dans 24 mois</div><div class="val" id="kpi-epargne">—</div><div class="sub" id="kpi-epargne-sub">—</div></div>
-  </div>
-
-  <div class="grid3" style="margin-top:16px;">
-    <div class="card">
-      <h2>Revenus</h2>
-      <div class="fields">
-        <div class="field"><label>Salaire Adrien (€/an)</label><input type="number" id="salaireAdrien" step="100"></div>
-        <div class="field"><label>Salaire Florie CDI (€/an)</label><input type="number" id="salaireFlorie" step="100"></div>
-        <div class="field" style="grid-column:1/-1"><label>CA psychologue libérale (€/an)</label><input type="number" id="caLib" step="500"></div>
-        <div class="field" style="grid-column:1/-1"><label>Régime libérale</label>
-          <select id="regimeLib"><option value="2035">Déclaration contrôlée (2035)</option><option value="micro">Micro-BNC (abattement 34 %)</option></select>
+    <details class="scen-box">
+      <summary>⚙️ Scénarios &amp; export</summary>
+      <div class="scen">
+        <div class="scen-title">SCÉNARIOS</div>
+        <select id="scen-list"><option value="">— Rejouer un scénario —</option></select>
+        <input type="text" id="scen-name" placeholder="Nom du scénario…">
+        <button class="btn grad" id="btn-scen-save">💾 Sauvegarder le réglage actuel</button>
+        <div class="scen-row">
+          <button class="btn" id="btn-scen-del">🗑 Supprimer</button>
+          <button class="btn" id="btn-scen-exp">⬇ JSON</button>
+          <button class="btn" id="btn-scen-imp">⬆ JSON</button>
         </div>
+        <input type="file" id="scen-file" accept=".json,application/json" style="display:none;">
+        <div class="scen-status" id="scen-status">—</div>
+        <button class="btn primary" id="btn-export">⬇ Exporter CSV (Excel)</button>
+        <div class="tiny">Fiscalité 2026 — résultats indicatifs, à valider avec un expert-comptable.</div>
       </div>
-    </div>
-
-    <div class="card">
-      <h2>Vincennes (location)</h2>
-      <div class="fields">
-        <div class="field" style="grid-column:1/-1"><label>Loyer (€/mois hors charges)</label><input type="number" id="loyerVinc" step="25"></div>
-        <div class="field" style="grid-column:1/-1"><label>Régime fiscal</label>
-          <select id="regimeVinc">
-            <option value="lmnp">LMNP réel (charges + amortissements)</option>
-            <option value="nue">Location nue — réel</option>
-            <option value="microbic">LMNP micro-BIC (abattement 50 %)</option>
-          </select>
-        </div>
-        <div class="field"><label>Mensualité prêt</label><input type="number" id="mensualitePret" step="10"></div>
-        <div class="field"><label>Intérêts/mois</label><input type="number" id="interetsMois" step="10"></div>
-        <div class="field"><label>Ass. prêt/mois</label><input type="number" id="assurancePretMois" step="1"></div>
-        <div class="field"><label>PNO/mois</label><input type="number" id="pnoMois" step="1"></div>
-        <div class="field"><label>Taxe foncière/an</label><input type="number" id="taxeFonciere" step="10"></div>
-        <div class="field"><label>Copro/an</label><input type="number" id="copro" step="10"></div>
-        <div class="field"><label>Prix achat</label><input type="number" id="prixAppart" step="1000"></div>
-        <div class="field"><label>Frais notaire</label><input type="number" id="fraisNotaire" step="500"></div>
-        <div class="field"><label>Part bâti (%)</label><input type="number" id="partBati" step="5"></div>
-        <div class="field"><label>Amort. (ans)</label><input type="number" id="dureeAmort" step="1"></div>
-        <div class="field"><label>Frais gestion agence (% du loyer)</label><input type="number" id="fraisGestionPct" step="0.5"></div>
-        <div class="field"><label>GLI loyers impayés (% du loyer)</label><input type="number" id="gliPct" step="0.5"></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Florie &amp; foyer</h2>
-      <div class="switch-row" style="margin-bottom:10px;">
-        <div><div class="t">Frais réels salariée</div><div class="s">Barème kilométrique domicile ↔ IME</div></div>
-        <input type="checkbox" id="fraisReels" style="width:34px;height:20px;">
-      </div>
-      <div class="fields">
-        <div class="field"><label>Km aller</label><input type="number" id="kmAller" step="5"></div>
-        <div class="field"><label>Jours/an</label><input type="number" id="joursTravail" step="1"></div>
-        <div class="field" style="grid-column:1/-1"><label>Loyer Aix (€/mois)</label><input type="number" id="loyerAix" step="25"></div>
-        <div class="field"><label>Quote-part cabinet (% du loyer)</label><input type="number" id="quotePartPct" step="5"></div>
-        <div class="field"><label>Autres charges libérale (€/an)</label><input type="number" id="autresChargesLib" step="100"></div>
-        <div class="field"><label>Cotisations sociales libérale (€/an)</label><input type="number" id="cotisLib" step="100"></div>
-        <div class="field"><label>Dépenses foyer/mois</label><input type="number" id="depensesMensuelles" step="50"></div>
-        <div class="field"><label>Parts fiscales</label><input type="number" id="parts" step="1"></div>
-        <div class="field"><label>Épargne initiale</label><input type="number" id="epargneInitiale" step="1000"></div>
-        <div class="field"><label>Horizon (mois)</label><input type="number" id="horizonMois" step="1"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Cash flow par bloc</h2>
-    <div class="kpi-grid" style="margin-top:0;">
-      <div class="kpi">
-        <div class="lab">① Foyer — Revenus + Florie &amp; Aix</div>
-        <div class="val" id="cf-foyer">—</div>
-        <div class="sub" id="cf-foyer-sub">—</div>
-      </div>
-      <div class="kpi">
-        <div class="lab">② Vincennes (location)</div>
-        <div class="val" id="cf-vinc">—</div>
-        <div class="sub" id="cf-vinc-sub">—</div>
-      </div>
-      <div class="kpi">
-        <div class="lab">③ Cash flow global (① + ②)</div>
-        <div class="val" id="cf-global">—</div>
-        <div class="sub" id="cf-global-sub">—</div>
-      </div>
-    </div>
-    <div class="note" id="cf-detail"></div>
-  </div>
-
-  <div class="card" id="liberal">
-    <h2>💼 Onglet Florie — Prévisionnel psychologue libérale</h2>
-    <div class="note" style="margin-top:0;">
-      Modèle repris de l'onglet « Prévisionnel full time » du business plan :
-      semaines travaillées = 12 × 4,33 − semaines de congés ; cotisations appliquées sur le CA ;
-      salaire net avant impôt = (CA − cotisations − charges récurrentes) / 12.
-    </div>
-    <div class="lib-grid">
-      <div>
-        <h3>Paramètres</h3>
-        <div class="fields" style="grid-template-columns:1fr;">
-          <div class="field range-row">
-            <label>Prix d'une consultation (€)</label>
-            <input type="range" class="slider" id="prixConsult-r" min="50" max="100" step="5">
-            <input type="number" id="prixConsult" step="5">
-          </div>
-          <div class="field range-row">
-            <label>Jours en libéral / semaine</label>
-            <input type="range" class="slider" id="joursSemaine-r" min="1" max="5" step="1">
-            <input type="number" id="joursSemaine" step="1">
-          </div>
-          <div class="field range-row">
-            <label>Séances moyennes / jour</label>
-            <input type="range" class="slider" id="seancesJour-r" min="3" max="10" step="1">
-            <input type="number" id="seancesJour" step="1">
-          </div>
-          <div class="field range-row">
-            <label>Charges récurrentes mensuelles (€)</label>
-            <input type="range" class="slider" id="chargesMensuelles-r" min="0" max="2500" step="10">
-            <input type="number" id="chargesMensuelles" step="10">
-          </div>
-          <div class="field range-row">
-            <label>Semaines de congés / an</label>
-            <input type="range" class="slider" id="congesSemaines-r" min="0" max="12" step="1">
-            <input type="number" id="congesSemaines" step="1">
-          </div>
-          <div class="field range-row">
-            <label>Bilans / mois</label>
-            <input type="range" class="slider" id="bilansMois-r" min="0" max="4" step="1">
-            <input type="number" id="bilansMois" step="1">
-          </div>
-          <div class="fields" style="grid-template-columns:1fr 1fr;">
-            <div class="field"><label>Prix bilan (€)</label><input type="number" id="prixBilan" step="25"></div>
-            <div class="field"><label>Taux cotisations (% du CA)</label><input type="number" id="tauxCotis" step="0.1"></div>
-          </div>
-        </div>
-        <button class="btn primary" id="btn-lib-push" style="margin-top:12px;width:100%;">→ Utiliser dans le simulateur foyer</button>
-        <div class="note">Le bouton envoie le CA annuel, les cotisations et les charges de cet onglet dans
-        les champs « CA libérale », « cotisations » et « autres charges » du simulateur foyer.
-        Si le loyer du cabinet est déjà dans les charges ci-contre, pensez à mettre la quote-part
-        cabinet du foyer à 0 %.</div>
-      </div>
-      <div>
-        <div class="kpi-grid" style="margin-top:0;">
-          <div class="kpi"><div class="lab">Salaire net avant impôt / mois</div><div class="val" id="lib-net">—</div><div class="sub">bénéfice net, moyenne mensuelle</div></div>
-          <div class="kpi"><div class="lab">Chiffre d'affaires / an</div><div class="val" id="lib-ca">—</div><div class="sub" id="lib-ca-sub">—</div></div>
-          <div class="kpi"><div class="lab">Cotisations / an</div><div class="val" id="lib-cotis">—</div><div class="sub" id="lib-cotis-sub">—</div></div>
-          <div class="kpi"><div class="lab">Revenu net / an</div><div class="val" id="lib-net-an">—</div><div class="sub" id="lib-net-an-sub">—</div></div>
-        </div>
-        <table style="margin-top:14px;">
-          <thead><tr><th>Simulation par séances/jour</th><th class="num">CA annuel</th><th class="num">Net mensuel</th></tr></thead>
-          <tbody id="lib-simu-body"></tbody>
-        </table>
-        <div class="note">Le tableau se recalcule avec le prix, les jours/semaine, les congés et les charges.
-        La ligne de votre réglage actuel est mise en évidence.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid3" style="margin-top:16px;">
-    <div class="card">
-      <h2>Flux mensuels</h2>
-      <div class="bars" id="bars"></div>
-    </div>
-    <div class="card" style="grid-column:1/-1;">
-      <h2 id="ep-title">Épargne cumulée</h2>
-      <div id="ep-svg"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <h2>Détail du calcul fiscal (annuel)</h2>
-    <table>
-      <thead><tr><th>Poste</th><th>Brut / déduction</th><th class="num">Imposable</th></tr></thead>
-      <tbody id="fiscal-body"></tbody>
-    </table>
-    <div class="note">
-      Hypothèses : barème kilométrique 0,357 €/km + 1 407 € ; abattement salarié 10 % ; micro-BNC 34 % ;
-      micro-BIC 50 % ; PS 17,2 % (nu) / 18,6 % (LMNP réel) / 9,7 % (BNC, salaires) ; barème IR 2026.
-      Frais de gestion et GLI : déductibles au réel (nue et LMNP), pas en micro-BIC (abattement forfaitaire).
-      La GLI est distincte de l'assurance PNO : la PNO couvre le bâtiment et la responsabilité, la GLI les loyers impayés.
-      Résultats indicatifs — à valider avec un expert-comptable.
-    </div>
-  </div>
-
-  <div class="card">
-    <details id="tests-details">
-      <summary>🧪 Tests automatiques</summary>
-      <div id="tests" style="margin-top:10px;"></div>
     </details>
-  </div>
-</div>
+  </header>
 
+  <main class="main">
+    <header class="top">
+      <div class="chip big"><div class="lab">CASH FLOW MENSUEL TOTAL</div><div class="val" id="kpi-solde">—</div><div class="sub" id="kpi-solde-sub">① foyer + ② Vincennes</div></div>
+      <div class="chip"><div class="lab">① CASH FLOW FOYER</div><div class="val" id="kpi-foyer">—</div><div class="sub">budget + impôts</div></div>
+      <div class="chip"><div class="lab">② CASH FLOW VINCENNES</div><div class="val" id="kpi-vinc">—</div><div class="sub">loyers − coûts</div></div>
+      <div class="chip"><div class="lab">IMPÔTS / AN</div><div class="val" id="kpi-impots">—</div><div class="sub" id="kpi-irps">—</div></div>
+      <div class="chip"><div class="lab">REVENU NET IMPOSABLE</div><div class="val" id="kpi-rni">—</div><div class="sub" id="kpi-parts">—</div></div>
+      <div class="chip"><div class="lab" id="kpi-ep-lab">ÉPARGNE DANS 120 MOIS</div><div class="val" id="kpi-epargne">—</div><div class="sub" id="kpi-epargne-sub">—</div></div>
+    </header>
+
+    <div class="pages">
+
+      <!-- ================= PAGE 1 : FOYER ================= -->
+      <section class="page on" id="page-foyer">
+        <h1 class="pg">🏠 Foyer — Revenus net avant impôts &amp; charges mensuelles</h1>
+        <div class="cols">
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--blue)"></span>Revenus net avant impôts &amp; calcul fiscal</h2>
+            <table class="bt">
+              <thead><tr>
+                <th style="text-align:left;font-size:10.5px;color:#7A7590;padding:2px 4px;">Revenus</th>
+                <th class="n" style="font-size:10.5px;color:#7A7590;padding:2px 4px;">Net €/mois</th>
+                <th class="n" style="font-size:10.5px;color:#7A7590;padding:2px 4px;">Brut €/an (fiscal)</th>
+              </tr></thead>
+              <tbody id="tbody-rev">
+                <tr><td>Adrien</td><td class="n"><input type="number" id="rev0" step="0.01" value="3000"></td><td class="n"><input type="number" id="rev0b" step="100" value="38500"></td></tr>
+                <tr><td>Florie IME (CDI)</td><td class="n"><input type="number" id="rev1" step="0.01" value="1330"></td><td class="n"><input type="number" id="rev1b" step="100" value="16200"></td></tr>
+                <tr><td>Florie Kidz / libérale<div class="sub" id="rev2-sub">auto : net avant impôt du prévisionnel</div></td><td class="n"><input type="number" id="rev2" step="0.01" value="1200"></td><td class="n" style="color:#7A7590;font-size:12px;">liée</td></tr>
+                <tr><td>Aides (CAF / CESU)</td><td class="n"><input type="number" id="rev3" step="0.01" value="0"></td><td class="n" style="color:#7A7590;">—</td></tr>
+                <tr><td>Tickets restaurants</td><td class="n"><input type="number" id="rev4" step="0.01" value="0"></td><td class="n" style="color:#7A7590;">—</td></tr>
+                <tr class="tot rev"><td>Total revenus mensuels</td><td class="n" id="tot-rev">—</td><td class="n"></td></tr>
+              </tbody>
+            </table>
+            <div class="switch-row" style="margin-top:10px;">
+              <div><div class="t">Lier « Florie Kidz / libérale » au prévisionnel</div><div class="s">Le net avant impôt calculé page libérale alimente automatiquement cette ligne</div></div>
+              <input type="checkbox" id="rev2-link" checked>
+            </div>
+            <div class="switch-row" style="margin:10px 0;">
+              <div><div class="t">Frais réels salariée (Florie CDI)</div><div class="s">Barème kilométrique domicile ↔ IME</div></div>
+              <input type="checkbox" id="fraisReels" checked>
+            </div>
+            <div class="fields">
+              <div class="field"><label>Km aller (1 trajet)</label><input type="number" id="kmAller" step="5" value="100"></div>
+              <div class="field"><label>Jours travaillés / an</label><input type="number" id="joursTravail" step="1" value="218"></div>
+              <div class="field"><label>Parts fiscales</label><input type="number" id="parts" step="1" value="3"></div>
+              <div class="field"><label>Épargne initiale (€)</label><input type="number" id="epargneInitiale" step="1000" value="150000"></div>
+              <div class="field"><label>Horizon (mois)</label><input type="number" id="horizonMois" step="6" value="120"></div>
+            </div>
+            <div class="note">Une seule source de vérité par revenu : la colonne « Net €/mois » alimente le budget,
+            la colonne « Brut €/an » sert au calcul de l’IR (barème 2026, abattement salarié 10 %).
+            La ligne libérale « liée » suit le prévisionnel — le revenu et son impôt évoluent ensemble,
+            donc augmenter le CA augmente toujours le cash flow.</div>
+          </div>
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--red)"></span>Dépenses mensuelles fixes (€/mois)</h2>
+            <table class="bt"><tbody id="tbody-fix"></tbody></table>
+            <div class="note">Les impôts et taxes des locations sont calculés automatiquement par le simulateur
+            (page Résultats). Les charges de Vincennes (TF, copro, PNO, assurance prêt) sont comptées
+            dans la page « Location Vincennes ».</div>
+          </div>
+        </div>
+        <div class="cols">
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--yellow)"></span>Dépenses annuelles ramenées au mois</h2>
+            <table class="bt"><tbody id="tbody-ann"></tbody></table>
+            <div class="note">Activités, conservatoire et vacances : budgétées annuellement, lissées en mensualité.</div>
+          </div>
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--purple)"></span>Dépenses mensuelles par catégorie</h2>
+            <table class="bt"><tbody id="tbody-cat"></tbody></table>
+          </div>
+        </div>
+        <div class="cols">
+          <div class="card" style="grid-column:1/-1;">
+            <h2>Synthèse revenus &amp; dépenses (€/mois)</h2>
+            <div class="syn-line"><span>Total revenus mensuels</span><b id="syn-rev">—</b></div>
+            <div class="syn-line"><span>Dépenses mensuelles fixes</span><b id="syn-fix">—</b></div>
+            <div class="syn-line"><span>Dépenses annuelles mensualisées</span><b id="syn-ann">—</b></div>
+            <div class="syn-line hl"><span>Reste à vivre</span><b id="syn-rav">—</b></div>
+            <div class="syn-line"><span>Dépenses par catégorie</span><b id="syn-cats">—</b></div>
+            <div class="syn-line hl"><span>Reste (avant impôts)</span><b id="syn-reste">—</b></div>
+            <div class="syn-line"><span>Impôts calculés (IR + prélèvements sociaux)</span><b id="syn-imp">—</b></div>
+            <div class="syn-line hl red"><span>Cash flow foyer ① (avec impôts)</span><b id="syn-foyer">—</b></div>
+            <div class="note">Les impôts (IR du foyer + PS des locations) sont calculés sur les revenus
+            bruts puis imputés intégralement au cash flow du foyer.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PAGE 2 : VINCENNES ================= -->
+      <section class="page" id="page-vinc">
+        <h1 class="pg">🏢 Gestion de la location — appartement Vincennes</h1>
+        <div class="cols">
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--blue)"></span>Paramètres</h2>
+            <div class="fields">
+              <div class="field"><label>Loyer (€/mois hors charges)</label><input type="number" id="loyerVinc" step="25" value="2300"></div>
+              <div class="field"><label>Régime fiscal</label>
+                <select id="regimeVinc">
+                  <option value="lmnp">LMNP réel (charges + amortissements)</option>
+                  <option value="nue">Location nue — réel</option>
+                  <option value="microbic">LMNP micro-BIC (abattement 50 %)</option>
+                </select>
+              </div>
+              <div class="field"><label>Mensualité prêt (€/mois)</label><input type="number" id="mensualitePret" step="10" value="2371.45"></div>
+              <div class="field"><label>Intérêts (€/mois)</label><input type="number" id="interetsMois" step="10" value="420"></div>
+              <div class="field"><label>Assurance prêt (€/mois)</label><input type="number" id="assurancePretMois" step="1" value="167.14"></div>
+              <div class="field"><label>PNO (€/mois)</label><input type="number" id="pnoMois" step="1" value="47"></div>
+              <div class="field"><label>Taxe foncière (€/an)</label><input type="number" id="taxeFonciere" step="10" value="1620"></div>
+              <div class="field"><label>Copro à votre charge (€/an)</label><input type="number" id="copro" step="10" value="2160"></div>
+              <div class="field"><label>Prix achat (€)</label><input type="number" id="prixAppart" step="1000" value="705000"></div>
+              <div class="field"><label>Frais notaire (€)</label><input type="number" id="fraisNotaire" step="500" value="50000"></div>
+              <div class="field"><label>Part bâti (%)</label><input type="number" id="partBati" step="5" value="80"></div>
+              <div class="field"><label>Amortissement (ans)</label><input type="number" id="dureeAmort" step="1" value="30"></div>
+              <div class="field"><label>Frais gestion agence (% loyer)</label><input type="number" id="fraisGestionPct" step="0.5" value="5"></div>
+              <div class="field"><label>GLI loyers impayés (% loyer)</label><input type="number" id="gliPct" step="0.5" value="2.5"></div>
+            </div>
+            <div class="note">La GLI est distincte de la PNO : la PNO couvre le bâtiment et la responsabilité,
+            la GLI les loyers impayés. Frais de gestion et GLI : déductibles au réel (nue et LMNP),
+            pas en micro-BIC (abattement forfaitaire). Copro : 0 si les charges récupérables sont
+            réglées directement par le locataire — n’incluez ici que la part restant à votre charge
+            (provisions pour gros travaux…).</div>
+          </div>
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--green)"></span>Résultats — bloc Vincennes ②</h2>
+            <div class="kpi-grid">
+              <div class="chip"><div class="lab">LOYERS / AN</div><div class="val" id="v-loyers">—</div></div>
+              <div class="chip"><div class="lab">CHARGES / AN</div><div class="val" id="v-charges">—</div><div class="sub" id="v-charges-sub">—</div></div>
+              <div class="chip"><div class="lab">IMPOSABLE / AN</div><div class="val" id="v-imposable">—</div><div class="sub" id="v-imposable-sub">—</div></div>
+              <div class="chip"><div class="lab">PS LOCATION / AN</div><div class="val" id="v-ps">—</div></div>
+              <div class="chip"><div class="lab">CASH FLOW / MOIS</div><div class="val" id="v-solde">—</div><div class="sub" id="v-solde-sub">—</div></div>
+            </div>
+            <div class="note" id="v-detail">—</div>
+            <div class="note">Cash flow complet : loyers − mensualité − gestion/GLI − charges courantes
+            (taxe foncière + copro + PNO + assurance prêt) − prélèvements sociaux.</div>
+            <div class="note">Charges déductibles (fiscales) : intérêts du prêt seulement — pas le capital
+            remboursé — + assurance emprunteur + taxe foncière + copro à votre charge + PNO + frais de
+            gestion + GLI. Elles servent de base au calcul de l’imposable (nue et LMNP réel ; abattement
+            forfaitaire en micro-BIC). À ne pas confondre avec vos charges cash : la mensualité complète
+            (capital + intérêts) compte pour le cash flow, seul le volet intérêts compte pour le fisc.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PAGE 3 : LIBÉRALE ================= -->
+      <section class="page" id="page-lib">
+        <h1 class="pg">💼 Prévisionnel — psychologue libérale (règles 2026, Cipav)</h1>
+        <div class="cols">
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--purple)"></span>Paramètres d’activité</h2>
+            <div class="field"><label>Prix d’une consultation (€)</label></div>
+            <div class="range-row"><input type="range" id="lib-prix-r" min="50" max="100" step="5"><input type="number" id="lib-prix" step="5" value="70"></div>
+            <div class="field"><label>Jours en libéral / semaine</label></div>
+            <div class="range-row"><input type="range" id="lib-jours-r" min="1" max="5" step="1"><input type="number" id="lib-jours" step="1" value="4"></div>
+            <div class="field"><label>Séances moyennes / jour</label></div>
+            <div class="range-row"><input type="range" id="lib-seances-r" min="3" max="10" step="1"><input type="number" id="lib-seances" step="1" value="8"></div>
+            <div class="field"><label>Charges récurrentes mensuelles (€) — dont loyer cabinet</label></div>
+            <div class="range-row"><input type="range" id="lib-charges-r" min="0" max="2500" step="10"><input type="number" id="lib-charges" step="10" value="1410"></div>
+            <div class="field"><label>Semaines de congés / an</label></div>
+            <div class="range-row"><input type="range" id="lib-conges-r" min="0" max="12" step="1"><input type="number" id="lib-conges" step="1" value="7"></div>
+            <div class="field"><label>Bilans / mois</label></div>
+            <div class="range-row"><input type="range" id="lib-bilans-r" min="0" max="4" step="1"><input type="number" id="lib-bilans" step="1" value="0"></div>
+            <div class="fields" style="margin-top:6px;">
+              <div class="field"><label>Prix bilan (€)</label><input type="number" id="lib-prixbilan" step="25" value="400"></div>
+              <div class="field"><label>CFP formation (€/an)</label><input type="number" id="lib-cfp" step="10" value="120"></div>
+            </div>
+
+            <h2 style="margin-top:16px;"><span class="hdot" style="background:var(--red)"></span>Régime fiscal &amp; cotisations 2026</h2>
+            <div class="field" style="margin-bottom:10px;">
+              <select id="lib-regime">
+                <option value="reel">Déclaration contrôlée 2035 (réel)</option>
+                <option value="micro">Micro-BNC — abattement 34 % (CA ≤ 83 600 €)</option>
+              </select>
+            </div>
+            <div class="warn" id="lib-seuil">⚠️ CA supérieur au seuil micro-BNC (83 600 €) : le régime réel est obligatoire.</div>
+            <div id="lib-micro-box">
+              <div class="fields">
+                <div class="field"><label>Taux cotisations micro (% CA)</label><input type="number" id="lib-tauxmicro" step="0.1" value="23.2"></div>
+              </div>
+              <div class="switch-row" style="margin:10px 0;">
+                <div><div class="t">ACRE (1ʳᵉ année)</div><div class="s">Taux réduit 17,4 % au lieu de 23,2 %</div></div>
+                <input type="checkbox" id="lib-acre">
+              </div>
+              <div class="switch-row" style="margin-bottom:10px;">
+                <div><div class="t">Versement libératoire IR</div><div class="s">2,2 % du CA à la place de l’IR (sous condition de RFR)</div></div>
+                <input type="checkbox" id="lib-vl">
+              </div>
+            </div>
+            <div id="lib-reel-box">
+              <div class="fields">
+                <div class="field"><label>Taux cotisations réel (% du bénéfice)</label><input type="number" id="lib-tauxreel" step="0.1" value="22"></div>
+                <div class="field"><label>CFE (€/an)</label><input type="number" id="lib-cfe" step="50" value="0"></div>
+              </div>
+              <div class="note">Profession libérale réglementée Cipav (via Urssaf) : maladie 8,50 %,
+              retraite de base ≈ 8,73 % sous plafond PASS 48 060 € (2026), retraite complémentaire et
+              invalidité-décès ≈ 0,50 %. En croisière : ~21–23 % du bénéfice net (taux paramétrable).
+              Les cotisations sont déductibles du bénéfice imposable. CFE due dès la 2ᵉ année.</div>
+            </div>
+            <div class="note">⚠️ Piège des 2 premières années : cotisations appelées sur base forfaitaire basse
+            puis régularisées à la hausse — provisionnez ~25 % de chaque séance.
+            TVA : séances de soin exonérées ; coaching/formation taxables (franchise 37 500 €).
+            Pour un calcul exact : simulateur Urssaf professions libérales Cipav (mon-entreprise.urssaf.fr).</div>
+          </div>
+
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--green)"></span>Résultats du prévisionnel</h2>
+            <div class="kpi-grid">
+              <div class="chip"><div class="lab">NET AVANT IMPÔT / MOIS</div><div class="val" id="lib-knet">—</div><div class="sub">CA − cotisations − charges</div></div>
+              <div class="chip"><div class="lab">CHIFFRE D’AFFAIRES / AN</div><div class="val" id="lib-kca">—</div><div class="sub" id="lib-kca-sub">—</div></div>
+              <div class="chip"><div class="lab">COTISATIONS / AN</div><div class="val" id="lib-kcotis">—</div><div class="sub" id="lib-kcotis-sub">—</div></div>
+              <div class="chip"><div class="lab">BÉNÉFICE IMPOSABLE / AN</div><div class="val" id="lib-kimp">—</div><div class="sub" id="lib-kimp-sub">—</div></div>
+            </div>
+            <table class="gen">
+              <thead><tr><th>Simulation par séances / jour</th><th class="num">CA annuel</th><th class="num">Net mensuel</th></tr></thead>
+              <tbody id="lib-simu-body"></tbody>
+            </table>
+            <div class="note" style="margin-top:12px;">Le net avant impôt alimente <b>automatiquement</b> la ligne
+            « Florie Kidz / libérale » du budget foyer (décochez « Lier » page Foyer pour une saisie manuelle).
+            Augmenter le CA augmente donc toujours le cash flow : le revenu net et son impôt
+            sont recalculés ensemble.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= PAGE 4 : RÉSULTATS ================= -->
+      <section class="page" id="page-res">
+        <h1 class="pg">📊 Résultats — flux, épargne cumulée &amp; détail fiscal</h1>
+        <div class="cols">
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--blue)"></span>Flux mensuels</h2>
+            <div class="bars" id="bars"></div>
+          </div>
+          <div class="card">
+            <h2><span class="hdot" style="background:var(--green)"></span>Épargne cumulée</h2>
+            <div id="ep-svg"></div>
+            <div class="note" id="ep-note">—</div>
+          </div>
+        </div>
+        <div class="card">
+          <h2><span class="hdot" style="background:var(--yellow)"></span>Détail du calcul fiscal (annuel)</h2>
+          <table class="gen">
+            <thead><tr><th>Poste</th><th>Brut / déduction</th><th class="num">Imposable</th></tr></thead>
+            <tbody id="fiscal-body"></tbody>
+          </table>
+          <div class="note">Hypothèses : barème IR 2026 (tranches 11 896 / 29 587 / 76 343 / 179 409 €),
+          abattement salarié 10 %, frais réels 0,357 €/km + 1 407 €, micro-BNC 34 % (min 305 €),
+          micro-BIC 50 %, PS 17,2 % (nu) / 18,6 % (LMNP réel) / 9,7 % (BNC, salaires).
+          En régime réel, les cotisations sociales de la libérale sont déductibles du bénéfice.
+          Résultats indicatifs — à valider avec un expert-comptable.</div>
+        </div>
+        <div class="card">
+          <details id="tests-details">
+            <summary>🧪 Tests automatiques</summary>
+            <div id="tests" style="margin-top:10px;"></div>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </main>
+    <nav class="bnav">
+      <button class="nav-btn act" data-page="page-foyer"><span class="ic">🏠</span><span>Foyer</span></button>
+      <button class="nav-btn" data-page="page-vinc"><span class="ic">🏢</span><span>Vincennes</span></button>
+      <button class="nav-btn" data-page="page-lib"><span class="ic">💼</span><span>Libérale</span></button>
+      <button class="nav-btn" data-page="page-res"><span class="ic">📊</span><span>Résultats</span></button>
+    </nav>
+</div>
 <div class="modal-bg" id="modal">
   <div class="modal">
     <h2 style="margin-top:0;">Export CSV</h2>
-    <p style="font-size:13px;color:#6b7280;margin:6px 0 10px;">
-      Après téléchargement du fichier HTML sur votre ordinateur, le bouton « Télécharger le fichier »
-      fonctionne directement. Ici, si le téléchargement est bloqué, utilisez « Copier le CSV »
-      puis collez le contenu dans Excel. Encodage UTF-8, séparateur point-virgule.
+    <p style="font-size:13px;color:#7A7590;margin:6px 0 10px;">
+      Encodage UTF-8, séparateur point-virgule : collez le contenu dans Excel
+      (Données → À partir du presse-papiers) ou ouvrez le fichier téléchargé directement.
     </p>
     <textarea id="csv-out" readonly></textarea>
     <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
@@ -314,12 +469,12 @@
     </div>
   </div>
 </div>
-
 <script>
 "use strict";
+
+/* ============ Formats & barème ============ */
 var fmt = function (v) { return v.toLocaleString("fr-FR", { maximumFractionDigits: 2 }) + " €"; };
 var fmt0 = function (v) { return Math.round(v).toLocaleString("fr-FR") + " €"; };
-
 var BAREME = [[11896, 0], [29587, 0.11], [76343, 0.30], [179409, 0.41], [Infinity, 0.45]];
 function irBar(means) {
   var s = 0, prev = 0;
@@ -332,145 +487,329 @@ function irBar(means) {
   return s;
 }
 
-var DEFAULTS = {
-  salaireAdrien: 38500, salaireFlorie: 16200, caLib: 17000,
-  loyerVinc: 2300, regimeVinc: "lmnp",
-  interetsMois: 420, assurancePretMois: 167.14, taxeFonciere: 1620, copro: 2160, pnoMois: 47,
-  prixAppart: 705000, fraisNotaire: 50000, partBati: 80, dureeAmort: 30, mobilier: 10000,
-  fraisReels: true, kmAller: 100, joursTravail: 218,
-  regimeLib: "2035", loyerAix: 1850, quotePartPct: 25, autresChargesLib: 6400, cotisLib: 3500,
-  fraisGestionPct: 7, gliPct: 2.5,
-  parts: 3, depensesMensuelles: 3300, epargneInitiale: 150000, mensualitePret: 2371.45, horizonMois: 24
+/* ============ Budget foyer (lignes paramétrables) ============ */
+var REV_LINES = [
+  ["Adrien (net)", 3000],
+  ["Florie IME (net)", 1330],
+  ["Florie Kidz / libérale (net)", 1200, "liée au prévisionnel libérale (auto)"],
+  ["Aides (CAF / CESU)", 0],
+  ["Tickets restaurants", 0]
+];
+var FIX_LINES = [
+  ["Prêt immo / Location Aix", 1800, "dont 420 € d’intérêt"],
+  ["EDF", 50],
+  ["Assurance prêt", 0, "si achat Aix — celle de Vincennes est page location"],
+  ["Assurance habitation + Lise", 47],
+  ["Assurance MAAF (voiture + Anna)", 132.47],
+  ["Services banque", 11.51],
+  ["Parking Indigo", 0],
+  ["Navigo", 0],
+  ["Bouygues", 21],
+  ["Free", 45],
+  ["Qobuz", 15],
+  ["OneDrive", 10],
+  ["Rodica", 0],
+  ["Marie", 0],
+  ["École", 320]
+];
+var ANN_LINES = [
+  ["Cheval Anna", 90], ["Conservatoire", 126], ["Escalade Adrien", 0], ["Salle Florie", 0],
+  ["Vacances ski", 250], ["Vacances été", 333], ["Train vacances", 67]
+];
+var CAT_LINES = [
+  ["Courses", 656], ["Déjeuner midi", 100], ["Habillement", 160], ["Voiture (hors essence)", 100],
+  ["Essence", 400], ["Shopping", 100], ["Loisirs / sorties / restaurant", 100], ["Piscine", 13],
+  ["Escalade Arkose", 15], ["Coiffeur and co", 0], ["Épargne assurance vie filles", 100]
+];
+
+var LIBDEFAULTS = {
+  prix: 70, jours: 4, seances: 8, charges: 1410, conges: 7, bilans: 0, prixBilan: 400,
+  regime: "reel", tauxMicro: 23.2, acre: false, cfp: 120, vl: false, tauxReel: 22, cfe: 0
 };
+var SEUIL_MICRO = 83600;
+
+/* ============ Construction des tables budget ============ */
+function buildBudgetTable(tbodyId, lines, prefix, totClass, totLabel) {
+  var html = lines.map(function (l, i) {
+    return "<tr><td>" + l[0] +
+      (l[2] ? '<div class="sub">' + l[2] + "</div>" : "") + '</td><td class="n"><input type="number" id="' +
+      prefix + i + '" step="0.01" value="' + l[1] + '"></td></tr>';
+  }).join("");
+  html += '<tr class="tot ' + totClass + '"><td>' + totLabel + '</td><td class="n" id="tot-' + prefix + '">—</td></tr>';
+  document.getElementById(tbodyId).innerHTML = html;
+}
+
+/* ============ Lecture des paramètres ============ */
+function readLibParams() {
+  var g = function (id) { return document.getElementById(id); };
+  var n = function (id) { return parseFloat(g(id).value) || 0; };
+  return {
+    prix: n("lib-prix"), jours: n("lib-jours"), seances: n("lib-seances"),
+    charges: n("lib-charges"), conges: n("lib-conges"), bilans: n("lib-bilans"),
+    prixBilan: n("lib-prixbilan"), regime: g("lib-regime").value,
+    tauxMicro: n("lib-tauxmicro"), acre: g("lib-acre").checked, cfp: n("lib-cfp"),
+    vl: g("lib-vl").checked, tauxReel: n("lib-tauxreel"), cfe: n("lib-cfe")
+  };
+}
 
 function readParams() {
   var g = function (id) { return document.getElementById(id); };
   var n = function (id) { return parseFloat(g(id).value) || 0; };
+  var arr = function (lines, prefix) {
+    return lines.map(function (l, i) { return n(prefix + i); });
+  };
   return {
-    salaireAdrien: n("salaireAdrien"), salaireFlorie: n("salaireFlorie"), caLib: n("caLib"),
-    loyerVinc: n("loyerVinc"), regimeVinc: g("regimeVinc").value,
-    interetsMois: n("interetsMois"), assurancePretMois: n("assurancePretMois"),
-    taxeFonciere: n("taxeFonciere"), copro: n("copro"), pnoMois: n("pnoMois"),
-    prixAppart: n("prixAppart"), fraisNotaire: n("fraisNotaire"),
-    partBati: n("partBati") / 100, dureeAmort: n("dureeAmort"), mobilier: 10000,
+    rev: arr(REV_LINES, "rev"), fix: arr(FIX_LINES, "fix"),
+    ann: arr(ANN_LINES, "ann"), cat: arr(CAT_LINES, "cat"),
+    salaireAdrien: n("rev0b"), salaireFlorie: n("rev1b"),
     fraisReels: g("fraisReels").checked, kmAller: n("kmAller"), joursTravail: n("joursTravail"),
-    regimeLib: g("regimeLib").value, loyerAix: n("loyerAix"), quotePartPct: n("quotePartPct") / 100,
-    autresChargesLib: n("autresChargesLib"), cotisLib: n("cotisLib"),
+    parts: n("parts"), epargneInitiale: n("epargneInitiale"), horizonMois: n("horizonMois"),
+    loyerVinc: n("loyerVinc"), regimeVinc: g("regimeVinc").value,
+    mensualitePret: n("mensualitePret"), interetsMois: n("interetsMois"),
+    assurancePretMois: n("assurancePretMois"), taxeFonciere: n("taxeFonciere"), copro: n("copro"),
+    pnoMois: n("pnoMois"), prixAppart: n("prixAppart"), fraisNotaire: n("fraisNotaire"),
+    partBati: n("partBati") / 100, dureeAmort: n("dureeAmort"),
     fraisGestionPct: n("fraisGestionPct") / 100, gliPct: n("gliPct") / 100,
-    parts: n("parts"), depensesMensuelles: n("depensesMensuelles"),
-    epargneInitiale: n("epargneInitiale"), mensualitePret: n("mensualitePret"), horizonMois: n("horizonMois")
+    lib: {
+      prix: n("lib-prix"), jours: n("lib-jours"), seances: n("lib-seances"),
+      charges: n("lib-charges"), conges: n("lib-conges"), bilans: n("lib-bilans"),
+      prixBilan: n("lib-prixbilan"), regime: g("lib-regime").value,
+      tauxMicro: n("lib-tauxmicro"), acre: g("lib-acre").checked, cfp: n("lib-cfp"),
+      vl: g("lib-vl").checked, tauxReel: n("lib-tauxreel"), cfe: n("lib-cfe")
+    }
   };
 }
 
-function computeState(p) {
-  var loyersV = p.loyerVinc * 12;
-  var fraisGestion = p.loyerVinc * 12 * p.fraisGestionPct;
-  var gli = p.loyerVinc * 12 * p.gliPct;
-  var chargesVinc = p.interetsMois * 12 + p.assurancePretMois * 12 + p.taxeFonciere + p.copro + p.pnoMois * 12 + fraisGestion + gli;
+function defaultParams() {
+  return {
+    rev: [3000, 1330, Math.round(computeLib(Object.assign({}, LIBDEFAULTS)).netMois * 100) / 100, 0, 0],
+    fix: FIX_LINES.map(function (l) { return l[1]; }),
+    ann: ANN_LINES.map(function (l) { return l[1]; }),
+    cat: CAT_LINES.map(function (l) { return l[1]; }),
+    salaireAdrien: 38500, salaireFlorie: 16200, fraisReels: true, kmAller: 100, joursTravail: 218,
+    parts: 3, epargneInitiale: 150000, horizonMois: 120,
+    loyerVinc: 2300, regimeVinc: "lmnp", mensualitePret: 2371.45, interetsMois: 420,
+    assurancePretMois: 167.14, taxeFonciere: 1620, copro: 2160, pnoMois: 47,
+    prixAppart: 705000, fraisNotaire: 50000, partBati: 0.8, dureeAmort: 30,
+    fraisGestionPct: 0.05, gliPct: 0.025,
+    lib: Object.assign({}, LIBDEFAULTS)
+  };
+}
 
+/* ============ Calcul libérale (règles 2026) ============ */
+function computeLib(l) {
+  var semaines = Math.max(0, 12 * 4.33 - l.conges);
+  var ca = l.prix * l.jours * l.seances * semaines + l.bilans * l.prixBilan * 12;
+  var chargesAn = l.charges * 12;
+  var cotis, imposable, irLib = 0, detail;
+  if (l.regime === "micro") {
+    var taux = l.acre ? 17.4 : l.tauxMicro;
+    cotis = ca * taux / 100 + l.cfp;
+    imposable = Math.max(305, ca * 0.66);
+    detail = "micro-BNC : abattement 34 % — cotisations " + taux + " % + CFP";
+    if (l.vl) { irLib = ca * 0.022; imposable = 0; detail += " — versement libératoire 2,2 %"; }
+  } else {
+    var benef = Math.max(0, ca - chargesAn);
+    cotis = benef * l.tauxReel / 100 + l.cfp;
+    imposable = Math.max(0, ca - chargesAn - cotis - l.cfe);
+    detail = "réel 2035 : CA − charges − cotisations (déductibles) − CFE";
+  }
+  var netAn = ca - cotis - chargesAn - l.cfe;
+  return {
+    semaines: semaines, ca: ca, chargesAn: chargesAn, cotis: cotis,
+    imposable: imposable, irLib: irLib, netAn: netAn, netMois: netAn / 12,
+    microOk: !(l.regime === "micro" && ca > SEUIL_MICRO), detail: detail
+  };
+}
+
+/* ============ Calcul global ============ */
+function computeState(p) {
+  var sum = function (a) { return a.reduce(function (s, v) { return s + v; }, 0); };
+  var b = {
+    totalRev: sum(p.rev), totalFixes: sum(p.fix), totalAnnuelles: sum(p.ann), totalCats: sum(p.cat)
+  };
+  b.resteAVivre = b.totalRev - b.totalFixes - b.totalAnnuelles;
+  b.reste = b.resteAVivre - b.totalCats;
+
+  var loyersV = p.loyerVinc * 12;
+  var fraisGestion = loyersV * p.fraisGestionPct;
+  var gli = loyersV * p.gliPct;
+  var chargesVinc = p.interetsMois * 12 + p.assurancePretMois * 12 + p.taxeFonciere + p.copro + p.pnoMois * 12 + fraisGestion + gli;
+  var amort = (p.prixAppart * p.partBati + p.fraisNotaire) / p.dureeAmort + 10000 / 10;
   var vincImposable;
   if (p.regimeVinc === "nue") vincImposable = Math.max(0, loyersV - chargesVinc);
   else if (p.regimeVinc === "microbic") vincImposable = loyersV * 0.5;
-  else {
-    var amort = (p.prixAppart * p.partBati + p.fraisNotaire) / p.dureeAmort + p.mobilier / 10;
-    vincImposable = Math.max(0, loyersV - chargesVinc - amort);
-  }
+  else vincImposable = Math.max(0, loyersV - chargesVinc - amort);
   var psTauxVinc = p.regimeVinc === "lmnp" ? 0.186 : 0.172;
+  var vincPs = vincImposable * psTauxVinc;
 
   var fraisReelsCalc = Math.min(p.kmAller * 2 * p.joursTravail * 0.357 + 1407, p.salaireFlorie);
   var salFlorieImposable = p.fraisReels ? Math.max(0, p.salaireFlorie - fraisReelsCalc) : p.salaireFlorie * 0.9;
   var salAdrienImposable = p.salaireAdrien * 0.9;
 
-  var quotePart = p.quotePartPct * p.loyerAix * 12;
-  var libImposable = p.regimeLib === "micro"
-    ? p.caLib * 0.66
-    : Math.max(0, p.caLib - quotePart - p.autresChargesLib - p.cotisLib);
+  var lib = computeLib(p.lib);
 
-  var rni = salAdrienImposable + salFlorieImposable + libImposable + vincImposable;
+  var rni = salAdrienImposable + salFlorieImposable + lib.imposable + vincImposable;
   var parts = Math.max(1, p.parts);
   var ir = irBar(rni / parts) * parts;
-  var ps = vincImposable * psTauxVinc + libImposable * 0.097 + salFlorieImposable * 0.097;
-  var impots = ir + ps;
+  var impotsCalc = ir + vincPs + lib.irLib;
+  var irShare = function (x) { return rni > 0 ? ir * Math.max(0, x) / rni : 0; };
+  var irAdr = irShare(salAdrienImposable), irFlo = irShare(salFlorieImposable),
+      irLibP = irShare(lib.imposable), irVinc = irShare(vincImposable);
 
-  var libCash = p.caLib - p.autresChargesLib - p.cotisLib;
-  var soldeVinc = p.loyerVinc - p.mensualitePret - (fraisGestion + gli) / 12;
-  var soldeFoyer = (p.salaireAdrien + p.salaireFlorie + libCash) / 12 -
-    p.loyerAix - p.depensesMensuelles - impots / 12;
+  var soldeFoyer = b.reste - impotsCalc / 12;
+  var chargesCourantesV = (p.taxeFonciere + p.copro + (p.pnoMois + p.assurancePretMois) * 12) / 12;
+  var soldeVinc = p.loyerVinc - p.mensualitePret - (fraisGestion + gli) / 12 - chargesCourantesV - vincPs / 12;
   var soldeMensuel = soldeFoyer + soldeVinc;
 
   var serie = [];
-  for (var m = 0; m <= p.horizonMois; m++) {
-    serie.push(Math.round(p.epargneInitiale + m * soldeMensuel));
-  }
+  for (var m = 0; m <= p.horizonMois; m++) serie.push(Math.round(p.epargneInitiale + m * soldeMensuel));
 
   var composants = [
-    { Poste: "Salaires", flux: (p.salaireAdrien + p.salaireFlorie) / 12 },
-    { Poste: "Libérale (net)", flux: libCash / 12 },
+    { Poste: "Revenus foyer (nets)", flux: b.totalRev },
+    { Poste: "Dépenses fixes", flux: -b.totalFixes },
+    { Poste: "Dépenses annuelles mensualisées", flux: -b.totalAnnuelles },
+    { Poste: "Dépenses par catégorie", flux: -b.totalCats },
+    { Poste: "Impôts (IR + PS)", flux: -impotsCalc / 12 },
     { Poste: "Loyer Vincennes", flux: p.loyerVinc },
-    { Poste: "Impôts", flux: -impots / 12 },
     { Poste: "Mensualité prêt", flux: -p.mensualitePret },
-    { Poste: "Loyer Aix", flux: -p.loyerAix },
-    { Poste: "Dépenses foyer", flux: -p.depensesMensuelles },
-    { Poste: "Gestion agence + GLI", flux: -(fraisGestion + gli) / 12 }
+    { Poste: "Gestion agence + GLI", flux: -(fraisGestion + gli) / 12 },
+    { Poste: "Charges courantes Vincennes", flux: -chargesCourantesV },
+    { Poste: "PS location", flux: -vincPs / 12 }
   ];
 
   return {
-    loyersV: loyersV, chargesVinc: chargesVinc, vincImposable: vincImposable,
-    fraisReelsCalc: fraisReelsCalc, salFlorieImposable: salFlorieImposable,
-    salAdrienImposable: salAdrienImposable, quotePart: quotePart, libImposable: libImposable,
-    rni: rni, ir: ir, ps: ps, impots: impots, libCash: libCash,
-    fraisGestion: fraisGestion, gli: gli,
-    soldeMensuel: soldeMensuel, soldeVinc: soldeVinc, soldeFoyer: soldeFoyer, serie: serie, composants: composants,
-    epargneFin: p.epargneInitiale + p.horizonMois * soldeMensuel
+    b: b, lib: lib, loyersV: loyersV, fraisGestion: fraisGestion, gli: gli,
+    chargesVinc: chargesVinc, amort: amort, vincImposable: vincImposable, vincPs: vincPs,
+    psTauxVinc: psTauxVinc, fraisReelsCalc: fraisReelsCalc,
+    salFlorieImposable: salFlorieImposable, salAdrienImposable: salAdrienImposable,
+    rni: rni, ir: ir, impotsCalc: impotsCalc,
+    irAdr: irAdr, irFlo: irFlo, irLibP: irLibP, irVinc: irVinc,
+    chargesCourantesV: chargesCourantesV,
+    soldeFoyer: soldeFoyer, soldeVinc: soldeVinc, soldeMensuel: soldeMensuel,
+    serie: serie, composants: composants,
+    epargneFin: p.epargneInitiale + p.horizonMois * soldeMensuel,
+    parts: parts
   };
 }
 
-function render() {
+/* ============ Rendu ============ */
+function renderAll() {
+  var $ = function (id) { return document.getElementById(id); };
+  var link = $("rev2-link");
+  var rev2 = $("rev2");
+  if (link.checked) {
+    rev2.readOnly = true;
+    rev2.value = Math.round(computeLib(readLibParams()).netMois * 100) / 100;
+  } else {
+    rev2.readOnly = false;
+  }
+  $("rev2-sub").textContent = link.checked
+    ? "auto : net avant impôt du prévisionnel (régime page libérale)"
+    : "saisie manuelle — cochez « Lier » pour suivre le prévisionnel";
   var p = readParams();
   var r = computeState(p);
-  var $ = function (id) { return document.getElementById(id); };
+  var cls = function (v) { return v >= 0 ? "pos" : "neg"; };
 
+  /* Topbar */
   $("kpi-solde").textContent = fmt(r.soldeMensuel);
-  $("kpi-solde").className = "val " + (r.soldeMensuel >= 0 ? "pos" : "neg");
-  $("kpi-solde-sub").textContent = (r.soldeMensuel >= 0 ? "excédent" : "déficit") + " / mois";
-  $("kpi-impots").textContent = fmt0(r.impots);
-  $("kpi-irps").textContent = "IR " + fmt0(r.ir) + " + PS " + fmt0(r.ps);
+  $("kpi-solde").className = "val " + cls(r.soldeMensuel);
+  $("kpi-foyer").textContent = fmt(r.soldeFoyer);
+  $("kpi-foyer").className = "val " + cls(r.soldeFoyer);
+  $("kpi-vinc").textContent = fmt(r.soldeVinc);
+  $("kpi-vinc").className = "val " + cls(r.soldeVinc);
+  $("kpi-impots").textContent = fmt0(r.impotsCalc);
+  $("kpi-impots").className = "val " + (r.impotsCalc > 0 ? "neg" : "");
+  $("kpi-irps").textContent = "IR " + fmt0(r.ir) + " + PS " + fmt0(r.impotsCalc - r.ir);
   $("kpi-rni").textContent = fmt0(r.rni);
-  $("kpi-parts").textContent = p.parts + " parts fiscales";
+  $("kpi-parts").textContent = r.parts + " parts fiscales";
   $("kpi-ep-lab").textContent = "Épargne dans " + p.horizonMois + " mois";
   $("kpi-epargne").textContent = fmt0(r.epargneFin);
+  $("kpi-epargne").className = "val " + cls(r.epargneFin);
   $("kpi-epargne-sub").textContent = "départ : " + fmt0(p.epargneInitiale);
 
-  $("cf-foyer").textContent = fmt(r.soldeFoyer);
-  $("cf-foyer").className = "val " + (r.soldeFoyer >= 0 ? "pos" : "neg");
-  $("cf-foyer-sub").textContent = "salaires + libérale nette − loyer Aix − dépenses − impôts/12";
-  $("cf-vinc").textContent = fmt(r.soldeVinc);
-  $("cf-vinc").className = "val " + (r.soldeVinc >= 0 ? "pos" : "neg");
-  $("cf-vinc-sub").textContent = "loyer − mensualité − gestion/GLI — " + (r.soldeVinc >= 0 ? "autofinancé" : "déficit");
-  $("cf-global").textContent = fmt(r.soldeMensuel);
-  $("cf-global").className = "val " + (r.soldeMensuel >= 0 ? "pos" : "neg");
-  $("cf-global-sub").textContent = "① + ② — " + (r.soldeMensuel >= 0 ? "excédent" : "déficit") + " mensuel total";
-  $("cf-detail").innerHTML =
-    "<b>① Foyer :</b> salaires " + fmt((p.salaireAdrien + p.salaireFlorie) / 12) +
-    " + libérale nette " + fmt(r.libCash / 12) +
-    " − loyer Aix " + fmt(p.loyerAix) +
-    " − dépenses " + fmt(p.depensesMensuelles) +
-    " − impôts " + fmt(r.impots / 12) +
-    " (l'impôt du foyer, calculé sur l'ensemble des revenus, est imputé à ce bloc). " +
-    "<b>② Vincennes :</b> loyer " + fmt(p.loyerVinc) +
-    " − mensualité " + fmt(p.mensualitePret) +
-    " − gestion+GLI " + fmt((r.fraisGestion + r.gli) / 12) + ".";
+  /* Budget */
+  $("tot-rev").textContent = fmt0(r.b.totalRev);
+  $("tot-fix").textContent = fmt0(r.b.totalFixes);
+  $("tot-ann").textContent = fmt0(r.b.totalAnnuelles);
+  $("tot-cat").textContent = fmt0(r.b.totalCats);
+  $("syn-rev").textContent = fmt(r.b.totalRev);
+  $("syn-fix").textContent = "− " + fmt(r.b.totalFixes);
+  $("syn-ann").textContent = "− " + fmt(r.b.totalAnnuelles);
+  $("syn-rav").textContent = fmt(r.b.resteAVivre);
+  $("syn-cats").textContent = "− " + fmt(r.b.totalCats);
+  $("syn-reste").textContent = fmt(r.b.reste);
+  $("syn-imp").textContent = "− " + fmt(r.impotsCalc / 12);
+  $("syn-foyer").textContent = fmt(r.soldeFoyer);
+  $("syn-foyer").className = cls(r.soldeFoyer);
 
+  /* Vincennes */
+  $("v-loyers").textContent = fmt0(r.loyersV);
+  $("v-charges").textContent = fmt0(r.chargesVinc);
+  $("v-charges-sub").textContent = "intérêts du prêt (pas le capital) + assurance + TF + copro + PNO + gestion + GLI";
+  var regimeLabel = p.regimeVinc === "lmnp" ? "LMNP réel" : p.regimeVinc === "nue" ? "Nue réel" : "Micro-BIC";
+  $("v-imposable").textContent = fmt0(r.vincImposable);
+  $("v-imposable-sub").textContent = regimeLabel + (p.regimeVinc === "lmnp" ? " — amort. " + fmt0(r.amort) : "");
+  $("v-ps").textContent = fmt0(r.vincPs);
+  $("v-solde").textContent = fmt(r.soldeVinc);
+  $("v-solde").className = "val " + cls(r.soldeVinc);
+  $("v-solde-sub").textContent = r.soldeVinc >= 0 ? "autofinancé" : "déficit";
+  $("v-detail").innerHTML =
+    "<b>Décomposition mensuelle :</b> loyers " + fmt(p.loyerVinc) +
+    " − mensualité " + fmt(p.mensualitePret) +
+    " − gestion+GLI " + fmt((r.fraisGestion + r.gli) / 12) +
+    " − charges courantes (TF + copro + PNO + ass. prêt) " + fmt(r.chargesCourantesV) +
+    " − PS " + fmt(r.vincPs / 12) + ".";
+
+  /* Libérale */
+  var l = p.lib, s = r.lib;
+  $("lib-knet").textContent = fmt(s.netMois);
+  $("lib-knet").className = "val " + cls(s.netMois);
+  $("lib-kca").textContent = fmt0(s.ca);
+  $("lib-kca-sub").textContent = s.semaines.toFixed(2).replace(".", ",") + " semaines — " +
+    l.jours + " j/sem × " + l.seances + " séances à " + fmt(l.prix) +
+    (l.bilans > 0 ? " + " + l.bilans + " bilan(s)/mois" : "");
+  $("lib-kcotis").textContent = fmt0(s.cotis);
+  $("lib-kcotis-sub").textContent = l.regime === "micro"
+    ? (l.acre ? "ACRE 17,4 % + CFP" : l.tauxMicro + " % du CA + CFP")
+    : l.tauxReel + " % du bénéfice + CFP";
+  $("lib-kimp").textContent = fmt0(s.imposable);
+  $("lib-kimp-sub").textContent = s.detail;
+
+  $("lib-micro-box").classList.toggle("hide", l.regime !== "micro");
+  $("lib-reel-box").classList.toggle("hide", l.regime !== "reel");
+  $("lib-seuil").classList.toggle("on", !s.microOk);
+
+  var ranges = { "lib-prix": [50, 100], "lib-jours": [1, 5], "lib-seances": [3, 10], "lib-charges": [0, 2500], "lib-conges": [0, 12], "lib-bilans": [0, 4] };
+  Object.keys(ranges).forEach(function (k) {
+    var rEl = $(k + "-r");
+    var v = Math.min(Math.max(parseFloat($(k).value) || 0, ranges[k][0]), ranges[k][1]);
+    if (rEl && parseFloat(rEl.value) !== v) rEl.value = v;
+  });
+
+  var rows = [5, 6, 7, 8];
+  if (l.seances >= 3 && l.seances <= 10 && rows.indexOf(l.seances) === -1) rows.push(l.seances);
+  rows.sort(function (a, b) { return a - b; });
+  $("lib-simu-body").innerHTML = rows.map(function (se) {
+    var st = computeLib(Object.assign({}, l, { seances: se }));
+    var cur = se === l.seances;
+    return "<tr" + (cur ? ' style="font-weight:700;background:#F3EDFE;"' : "") + "><td>" +
+      se + " séances/jour" + (cur ? " ← réglage actuel" : "") + "</td>" +
+      '<td class="num">' + fmt0(st.ca) + '</td><td class="num">' + fmt(st.netMois) + "</td></tr>";
+  }).join("");
+
+  /* Résultats : flux */
   var maxAbs = 1;
   r.composants.forEach(function (c) { maxAbs = Math.max(maxAbs, Math.abs(c.flux)); });
   $("bars").innerHTML = r.composants.map(function (c) {
     var w = Math.abs(c.flux) / maxAbs * 50;
-    var cls = c.flux >= 0 ? "pos" : "neg";
-    return '<div class="bar-row"><div>' + c.Poste + '</div>' +
-      '<div class="bar-track"><div class="bar-axis"></div><div class="bar-fill ' + cls + '" style="width:' + w + '%"></div></div>' +
+    var c2 = c.flux >= 0 ? "pos" : "neg";
+    return '<div class="bar-row"><div>' + c.Poste + "</div>" +
+      '<div class="bar-track"><div class="bar-axis"></div><div class="bar-fill ' + c2 + '" style="width:' + w + '%"></div></div>' +
       '<div class="bar-val">' + fmt(c.flux) + "</div></div>";
   }).join("");
 
+  /* Résultats : épargne */
   var W = 900, H = 240, pad = 44;
   var serie = r.serie;
   var minE = Math.min.apply(null, serie), maxE = Math.max.apply(null, serie);
@@ -478,191 +817,116 @@ function render() {
   var x = function (i) { return pad + (W - 2 * pad) * (serie.length > 1 ? i / (serie.length - 1) : 0); };
   var y = function (v) { return pad + (H - 2 * pad) * (1 - (v - minE) / span); };
   var pts = serie.map(function (v, i) { return x(i).toFixed(1) + "," + y(v).toFixed(1); }).join(" ");
-  var ticks = [minE, minE + span / 2, maxE];
   var svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;">';
-  ticks.forEach(function (t) {
+  [minE, minE + span / 2, maxE].forEach(function (t) {
     svg += '<text x="6" y="' + (y(t) + 3).toFixed(1) + '">' + Math.round(t / 1000) + " k€</text>";
-    svg += '<line x1="' + pad + '" y1="' + y(t).toFixed(1) + '" x2="' + (W - 8) + '" y2="' + y(t).toFixed(1) + '" stroke="#e5e7eb" stroke-dasharray="3 3"/>';
+    svg += '<line x1="' + pad + '" y1="' + y(t).toFixed(1) + '" x2="' + (W - 8) + '" y2="' + y(t).toFixed(1) + '" stroke="#ECE6DB" stroke-dasharray="3 3"/>';
   });
-  svg += '<polyline points="' + pts + '" fill="none" stroke="#16a34a" stroke-width="2"/>';
+  svg += '<polyline points="' + pts + '" fill="none" stroke="#0FA97C" stroke-width="2"/>';
   svg += '<text x="' + (W / 2) + '" y="' + (H - 6) + '" text-anchor="middle">mois</text>';
   svg += "</svg>";
   $("ep-svg").innerHTML = svg;
+  $("ep-note").textContent = "Cash flow mensuel de " + fmt(r.soldeMensuel) + " cumulé sur " +
+    p.horizonMois + " mois — " + (r.epargneFin >= 0 ? "trajectoire positive" : "⚠️ épargne en baisse") + ".";
 
-  var regimeVLabel = p.regimeVinc === "lmnp" ? "LMNP réel" : p.regimeVinc === "nue" ? "Nue réel" : "Micro-BIC";
-  var brutV = "loyers " + fmt0(r.loyersV) + " − charges " + fmt0(r.chargesVinc) + (p.regimeVinc === "lmnp" ? " − amortissements" : "") + " (dont gestion+GLI " + fmt0(r.fraisGestion + r.gli) + ")";
-  var brutL = p.regimeLib === "micro"
-    ? "abattement 34 %"
-    : "− quote-part " + fmt0(r.quotePart) + " − autres " + fmt0(p.autresChargesLib) + " − cotis. " + fmt0(p.cotisLib);
-  var rows = [
+  /* Résultats : fiscal */
+  var brutV = "loyers " + fmt0(r.loyersV) + " − charges " + fmt0(r.chargesVinc) +
+    (p.regimeVinc === "lmnp" ? " − amortissements " + fmt0(r.amort) : "");
+  var brutL = l.regime === "micro"
+    ? "abattement 34 % (min 305 €)" + (l.vl ? " + VL 2,2 % CA" : "")
+    : "− charges " + fmt0(s.chargesAn) + " − cotis. " + fmt0(s.cotis) + (l.cfe > 0 ? " − CFE " + fmt0(l.cfe) : "");
+  var frows = [
     ["Salaire Adrien (après abattement 10 %)", fmt0(p.salaireAdrien), fmt0(r.salAdrienImposable)],
     ["Salaire Florie CDI — " + (p.fraisReels ? "frais réels" : "abattement 10 %"),
       "− " + fmt0(p.fraisReels ? r.fraisReelsCalc : p.salaireFlorie * 0.1), fmt0(r.salFlorieImposable)],
-    ["Vincennes — " + regimeVLabel, brutV, fmt0(r.vincImposable)],
-    ["Psychologue libérale — " + (p.regimeLib === "micro" ? "Micro-BNC" : "2035"), brutL, fmt0(r.libImposable)],
+    ["Vincennes — " + regimeLabel, brutV, fmt0(r.vincImposable)],
+    ["Psychologue libérale — " + (l.regime === "micro" ? "micro-BNC" : "2035 réel"), brutL, fmt0(s.imposable)],
     ["Revenu net imposable", "", fmt0(r.rni)],
-    ["Impôt sur le revenu (barème, " + p.parts + " parts)", "", fmt0(r.ir)],
-    ["Prélèvements sociaux", "", fmt0(r.ps)]
+    ["Impôt sur le revenu (barème, " + r.parts + " parts)", "", fmt0(r.ir)],
+    ["· dont IR — salaire Adrien (prorata)", "", fmt0(r.irAdr)],
+    ["· dont IR — Florie CDI (prorata)", "", fmt0(r.irFlo)],
+    ["· dont IR — psychologue libérale (prorata)", "", fmt0(r.irLibP)],
+    ["· dont IR — location Vincennes (prorata)", "", fmt0(r.irVinc)],
+    ["Prélèvements sociaux (location " + (r.psTauxVinc * 100).toFixed(1).replace(".", ",") + " %)", "", fmt0(r.vincPs)]
   ];
-  $("fiscal-body").innerHTML = rows.map(function (row, i) {
-    var cls = i >= 4 ? ' class="total"' : "";
-    return "<tr" + cls + "><td>" + row[0] + "</td><td>" + row[1] + '</td><td class="num">' + row[2] + "</td></tr>";
+  if (s.irLib > 0) frows.push(["Versement libératoire libérale (2,2 % CA)", "", fmt0(s.irLib)]);
+  frows.push(["Impôt total imputé au cash flow foyer (IR + PS)", "", fmt0(r.impotsCalc)]);
+  $("fiscal-body").innerHTML = frows.map(function (row, i) {
+    var isDetail = row[0].indexOf("·") === 0;
+    var tot = i >= 4 && !isDetail;
+    return "<tr" + (tot ? ' class="total"' : "") + "><td" + (isDetail ? ' style="padding-left:18px;color:#7A7590;"' : "") + ">" +
+      row[0] + "</td><td>" + row[1] + '</td><td class="num">' + row[2] + "</td></tr>";
   }).join("");
 
   window.__lastCsv = buildCsv(p, r);
 }
 
+/* ============ Export CSV ============ */
 function buildCsv(p, r) {
-  var L = readLibParams();
-  var S = computeLibState(L);
-  var rows = [
-    ["Simulation cash flow foyer — Vincennes/Aix"], [],
-    ["Paramètres", "Valeur"],
-    ["Salaire Adrien (€/an)", p.salaireAdrien],
-    ["Salaire Florie CDI (€/an)", p.salaireFlorie],
-    ["CA psychologue libérale (€/an)", p.caLib],
-    ["Régime Vincennes", p.regimeVinc],
-    ["Loyer Vincennes (€/mois)", p.loyerVinc],
-    ["Mensualité prêt (€/mois)", p.mensualitePret],
-    ["Intérêts prêt (€/mois)", p.interetsMois],
-    ["Assurance prêt (€/mois)", p.assurancePretMois],
-    ["Taxe foncière (€/an)", p.taxeFonciere],
-    ["Charges copro (€/an)", p.copro],
-    ["Assurance PNO (€/mois)", p.pnoMois],
-    ["Frais réels salariée", p.fraisReels ? "oui" : "non"],
-    ["Régime libérale", p.regimeLib],
-    ["Loyer Aix (€/mois)", p.loyerAix],
-    ["Quote-part domicile (%)", p.quotePartPct * 100],
-    ["Frais gestion agence (% loyer)", p.fraisGestionPct * 100],
-    ["GLI loyers impayés (% loyer)", p.gliPct * 100],
-    ["Frais gestion annuels (€)", Math.round(r.fraisGestion)],
-    ["GLI annuelle (€)", Math.round(r.gli)],
-    ["Dépenses foyer (€/mois)", p.depensesMensuelles],
-    ["Parts fiscales", p.parts],
-    ["Épargne initiale (€)", p.epargneInitiale], [],
-    ["Résultats", "Valeur"],
-    ["Revenu net imposable (€/an)", Math.round(r.rni)],
-    ["Impôt sur le revenu (€/an)", Math.round(r.ir)],
-    ["Prélèvements sociaux (€/an)", Math.round(r.ps)],
-    ["Impôts total (€/an)", Math.round(r.impots)],
-    ["Imposable Vincennes (€/an)", Math.round(r.vincImposable)],
-    ["Imposable libérale (€/an)", Math.round(r.libImposable)],
-    ["Frais réels salariée (€/an)", Math.round(r.fraisReelsCalc)],
-    ["Cash flow foyer (€/mois)", Math.round(r.soldeFoyer * 100) / 100],
-    ["Cash flow Vincennes (€/mois)", Math.round(r.soldeVinc * 100) / 100],
-    ["Cash flow mensuel (€)", Math.round(r.soldeMensuel * 100) / 100],
-    ["Épargne après horizon (€)", Math.round(r.epargneFin)],
-    [],
-    ["Activité libérale (onglet prévisionnel)", "Valeur"],
-    ["Prix consultation (€)", L.prixConsult],
-    ["Jours en libéral / semaine", L.joursSemaine],
-    ["Séances moyennes / jour", L.seancesJour],
-    ["Charges récurrentes (€/mois)", L.chargesMensuelles],
-    ["Semaines de congés / an", L.congesSemaines],
-    ["Bilans / mois", L.bilansMois],
-    ["Prix bilan (€)", L.prixBilan],
-    ["Taux cotisations (% CA)", L.tauxCotis],
-    ["Semaines travaillées / an", Math.round(S.semaines * 100) / 100],
-    ["CA libérale annuel (€)", Math.round(S.caAnnuel)],
-    ["Cotisations annuelles (€)", Math.round(S.cotisAnnuel)],
-    ["Revenu net annuel (€)", Math.round(S.netAnnuel)],
-    ["Salaire net avant impôt (€/mois)", Math.round(S.netMensuel * 100) / 100]
-  ];
+  var rows = [["Simulation cash flow foyer — Vincennes / Aix"], [], ["Budget foyer (€/mois)", "Valeur"]];
+  rows.push(["SECTION", "Revenus net avant impôts"]);
+  REV_LINES.forEach(function (l, i) { rows.push([l[0], p.rev[i]]); });
+  rows.push(["Total revenus mensuels", Math.round(r.b.totalRev * 100) / 100]);
+  rows.push(["SECTION", "Dépenses mensuelles fixes"]);
+  FIX_LINES.forEach(function (l, i) { rows.push([l[0], p.fix[i]]); });
+  rows.push(["Total dépenses fixes", Math.round(r.b.totalFixes * 100) / 100]);
+  rows.push(["SECTION", "Dépenses annuelles mensualisées"]);
+  ANN_LINES.forEach(function (l, i) { rows.push([l[0], p.ann[i]]); });
+  rows.push(["Total dépenses annuelles mensualisées", Math.round(r.b.totalAnnuelles * 100) / 100]);
+  rows.push(["SECTION", "Dépenses par catégorie"]);
+  CAT_LINES.forEach(function (l, i) { rows.push([l[0], p.cat[i]]); });
+  rows.push(["Total dépenses catégories", Math.round(r.b.totalCats * 100) / 100]);
+  rows.push(["Reste à vivre", Math.round(r.b.resteAVivre * 100) / 100]);
+  rows.push(["Reste avant impôts", Math.round(r.b.reste * 100) / 100]);
+  rows.push([], ["Calcul fiscal foyer", "Valeur"]);
+  rows.push(["Salaire Adrien brut (€/an)", p.salaireAdrien]);
+  rows.push(["Salaire Florie CDI brut (€/an)", p.salaireFlorie]);
+  rows.push(["Frais réels salariée", p.fraisReels ? "oui" : "non"]);
+  rows.push(["Parts fiscales", p.parts]);
+  rows.push(["Épargne initiale (€)", p.epargneInitiale]);
+  rows.push(["Horizon (mois)", p.horizonMois]);
+  rows.push(["Revenu net imposable (€/an)", Math.round(r.rni)]);
+  rows.push(["Impôt sur le revenu (€/an)", Math.round(r.ir)]);
+  rows.push(["dont IR salaire Adrien (prorata, €/an)", Math.round(r.irAdr)]);
+  rows.push(["dont IR Florie CDI (prorata, €/an)", Math.round(r.irFlo)]);
+  rows.push(["dont IR psychologue libérale (prorata, €/an)", Math.round(r.irLibP)]);
+  rows.push(["dont IR location Vincennes (prorata, €/an)", Math.round(r.irVinc)]);
+  rows.push(["Prélèvements sociaux (€/an)", Math.round(r.vincPs)]);
+  if (r.lib.irLib > 0) rows.push(["Versement libératoire 2,2 % CA (€/an)", Math.round(r.lib.irLib)]);
+  rows.push([], ["Location Vincennes", "Valeur"]);
+  rows.push(["Régime", p.regimeVinc]);
+  rows.push(["Loyer (€/mois)", p.loyerVinc]);
+  rows.push(["Mensualité prêt (€/mois)", p.mensualitePret]);
+  rows.push(["Charges annuelles (€)", Math.round(r.chargesVinc)]);
+  rows.push(["Imposable (€/an)", Math.round(r.vincImposable)]);
+  rows.push(["PS (€/an)", Math.round(r.vincPs)]);
+  rows.push(["Cash flow Vincennes (€/mois)", Math.round(r.soldeVinc * 100) / 100]);
+  rows.push([], ["Psychologue libérale (prévisionnel)", "Valeur"]);
+  var l = p.lib, s = r.lib;
+  rows.push(["Régime", l.regime]);
+  rows.push(["Prix consultation (€)", l.prix]);
+  rows.push(["Jours / semaine", l.jours]);
+  rows.push(["Séances / jour", l.seances]);
+  rows.push(["Charges mensuelles (€)", l.charges]);
+  rows.push(["Semaines congés / an", l.conges]);
+  rows.push(["Bilans / mois", l.bilans]);
+  rows.push(["Semaines travaillées", Math.round(s.semaines * 100) / 100]);
+  rows.push(["CA annuel (€)", Math.round(s.ca)]);
+  rows.push(["Cotisations (€/an)", Math.round(s.cotis)]);
+  rows.push(["Bénéfice imposable (€/an)", Math.round(s.imposable)]);
+  if (s.irLib > 0) rows.push(["Versement libératoire (€/an)", Math.round(s.irLib)]);
+  rows.push(["Net avant impôt (€/mois)", Math.round(s.netMois * 100) / 100]);
+  rows.push([], ["Résultats globaux", "Valeur"]);
+  rows.push(["Cash flow foyer (€/mois)", Math.round(r.soldeFoyer * 100) / 100]);
+  rows.push(["Cash flow Vincennes (€/mois)", Math.round(r.soldeVinc * 100) / 100]);
+  rows.push(["Cash flow mensuel total (€)", Math.round(r.soldeMensuel * 100) / 100]);
+  rows.push(["Impôts calculés (€/an)", Math.round(r.impotsCalc)]);
+  rows.push(["Épargne après horizon (€)", Math.round(r.epargneFin)]);
   return rows.map(function (row) {
-    return row.map(function (c) { return '"' + String(c === null || c === undefined ? "" : c).replace(/"/g, '""') + '"'; }).join(";");
+    return row.map(function (c) {
+      return '"' + String(c === null || c === undefined ? "" : c).replace(/"/g, '""') + '"';
+    }).join(";");
   }).join("\n");
-}
-
-/* ============ Onglet psychologue libérale ============ */
-var LIBDEFAULTS = {
-  prixConsult: 70, joursSemaine: 4, seancesJour: 8, chargesMensuelles: 1410,
-  congesSemaines: 7, bilansMois: 0, prixBilan: 400, tauxCotis: 23.2
-};
-
-function readLibParams() {
-  var g = function (id) { return document.getElementById(id); };
-  var n = function (id) { return parseFloat(g(id).value) || 0; };
-  return {
-    prixConsult: n("prixConsult"), joursSemaine: n("joursSemaine"), seancesJour: n("seancesJour"),
-    chargesMensuelles: n("chargesMensuelles"), congesSemaines: n("congesSemaines"),
-    bilansMois: n("bilansMois"), prixBilan: n("prixBilan"), tauxCotis: n("tauxCotis")
-  };
-}
-
-function computeLibState(l) {
-  var semaines = Math.max(0, 12 * 4.33 - l.congesSemaines);
-  var caAnnuel = l.prixConsult * l.joursSemaine * l.seancesJour * semaines + l.bilansMois * l.prixBilan * 12;
-  var cotisAnnuel = caAnnuel * l.tauxCotis / 100;
-  var netAnnuel = caAnnuel - cotisAnnuel - l.chargesMensuelles * 12;
-  return {
-    semaines: semaines, caAnnuel: caAnnuel, cotisAnnuel: cotisAnnuel,
-    netAnnuel: netAnnuel, netMensuel: netAnnuel / 12
-  };
-}
-
-function renderLib() {
-  var l = readLibParams();
-  var s = computeLibState(l);
-  var $ = function (id) { return document.getElementById(id); };
-
-  $("lib-net").textContent = fmt(s.netMensuel);
-  $("lib-net").className = "val " + (s.netMensuel >= 0 ? "pos" : "neg");
-  $("lib-ca").textContent = fmt0(s.caAnnuel);
-  $("lib-ca-sub").textContent = s.semaines.toFixed(2).replace(".", ",") + " semaines travaillées — " +
-    l.joursSemaine + " j/sem × " + l.seancesJour + " séances à " + fmt(l.prixConsult) +
-    (l.bilansMois > 0 ? " + " + l.bilansMois + " bilan(s)/mois à " + fmt(l.prixBilan) : "");
-  $("lib-cotis").textContent = fmt0(s.cotisAnnuel);
-  $("lib-cotis-sub").textContent = l.tauxCotis + " % du CA (URSSAF)";
-  $("lib-net-an").textContent = fmt0(s.netAnnuel);
-  $("lib-net-an-sub").textContent = "CA − cotisations − " + fmt0(l.chargesMensuelles * 12) + " € de charges/an";
-
-  var ranges = { prixConsult: [50, 100], joursSemaine: [1, 5], seancesJour: [3, 10], chargesMensuelles: [0, 2500], congesSemaines: [0, 12], bilansMois: [0, 4] };
-  Object.keys(ranges).forEach(function (k) {
-    var r = $(k + "-r");
-    var v = Math.min(Math.max(parseFloat($(k).value) || 0, ranges[k][0]), ranges[k][1]);
-    if (r && parseFloat(r.value) !== v) r.value = v;
-  });
-
-  var rows = [5, 6, 7, 8];
-  if (l.seancesJour >= 3 && l.seancesJour <= 10 && rows.indexOf(l.seancesJour) === -1) rows.push(l.seancesJour);
-  rows.sort(function (a, b) { return a - b; });
-  $("lib-simu-body").innerHTML = rows.map(function (se) {
-    var st = computeLibState(Object.assign({}, l, { seancesJour: se }));
-    var cur = se === l.seancesJour;
-    return "<tr" + (cur ? ' style="font-weight:700;background:#f0fdf4;"' : "") + "><td>" +
-      se + " séances/jour" + (cur ? " ← réglage actuel" : "") + "</td>" +
-      '<td class="num">' + fmt0(st.caAnnuel) + '</td><td class="num">' + fmt(st.netMensuel) + "</td></tr>";
-  }).join("");
-}
-
-function enhanceNumberInputs() {
-  var nums = document.querySelectorAll("input[type=number]");
-  Array.prototype.forEach.call(nums, function (el) {
-    if (el.parentNode && el.parentNode.classList && el.parentNode.classList.contains("stepper")) return;
-    var wrap = document.createElement("div");
-    wrap.className = "stepper";
-    el.parentNode.insertBefore(wrap, el);
-    wrap.appendChild(el);
-    var mkBtn = function (label, delta) {
-      var b = document.createElement("button");
-      b.type = "button";
-      b.textContent = label;
-      b.addEventListener("click", function (ev) {
-        ev.preventDefault();
-        var step = parseFloat(el.step) || 1;
-        var min = el.min !== "" && el.min !== undefined ? parseFloat(el.min) : null;
-        var max = el.max !== "" && el.max !== undefined ? parseFloat(el.max) : null;
-        var v = (parseFloat(el.value) || 0) + delta * step;
-        if (min !== null) v = Math.max(min, v);
-        if (max !== null) v = Math.min(max, v);
-        el.value = Math.round(v * 100) / 100;
-        el.dispatchEvent(new Event("input", { bubbles: true }));
-      });
-      return b;
-    };
-    wrap.insertBefore(mkBtn("−", -1), el);
-    wrap.appendChild(mkBtn("+", 1));
-  });
 }
 
 /* ============ Tests ============ */
@@ -679,48 +943,79 @@ function runTests() {
   T.push(approx("irBar : 11 897 € → 0,11 €", irBar(11897), 0.11, 0.01));
   T.push(approx("irBar : fin de tranche 11 % (29 587 €)", irBar(29587), (29587 - 11896) * 0.11, 0.01));
   T.push(approx("irBar : 100 000 € (tranches 11/30/41 %)", irBar(100000), (29587 - 11896) * 0.11 + (76343 - 29587) * 0.30 + (100000 - 76343) * 0.41, 0.5));
-  T.push(expectOk("irBar : croissance monotone", irBar(50000) > irBar(30000) && irBar(30000) >= irBar(11896)));
 
-  var D = { partBati: 0.8, quotePartPct: 0.25, fraisGestionPct: 0.07, gliPct: 0.025 };
-  var base = computeState(Object.assign({}, DEFAULTS, D));
-  T.push(approx("Défaut : gestion 7 % + GLI 2,5 % = 2 622 €/an", base.fraisGestion + base.gli, 2622, 0.01));
-  T.push(approx("Défaut : charges Vincennes ≈ 14 011,68 €/an (incl. gestion + GLI)", base.chargesVinc, 14011.68, 0.01));
-  T.push(expectOk("Défaut : LMNP réel → Vincennes imposable 0 €", base.vincImposable === 0));
-  T.push(approx("Défaut : frais réels plafonnés au salaire", base.fraisReelsCalc, 16200, 0.01));
-  T.push(approx("Défaut : libérale 2035 → 1 550 € imposables", base.libImposable, 1550, 0.01));
-  T.push(approx("Défaut : RNI = 36 200 €", base.rni, 36200, 0.01));
-  T.push(approx("Défaut : IR ≈ 56,32 € (3 parts)", base.ir, 56.32, 1));
-  T.push(approx("Défaut : PS = 150,35 €", base.ps, 150.35, 0.01));
-  T.push(approx("Défaut : solde mensuel ≈ −307,17 € (gestion + GLI déduites)", base.soldeMensuel, -307.17, 1));
-  T.push(approx("Défaut : cash flow foyer ≈ −17,22 €/mois", base.soldeFoyer, -17.22, 1));
-  T.push(approx("Défaut : cash flow Vincennes ≈ −289,95 €/mois", base.soldeVinc, -289.95, 1));
-  T.push(expectOk("Cohérence : foyer + Vincennes = cash flow global", Math.abs(base.soldeFoyer + base.soldeVinc - base.soldeMensuel) < 0.01));
-  T.push(expectOk("Défaut : somme des flux = solde mensuel", Math.abs(base.composants.reduce(function (s, c) { return s + c.flux; }, 0) - base.soldeMensuel) < 0.01));
+  var DP = defaultParams();
+  var R = computeState(DP);
+  var B = R.b;
 
-  T.push(approx("Vincennes nue → 13 588,32 € imposables (gestion + GLI déductibles au réel)", computeState(Object.assign({}, DEFAULTS, D, { regimeVinc: "nue" })).vincImposable, 13588.32, 0.01));
-  T.push(approx("Vincennes micro-BIC → 13 800 €", computeState(Object.assign({}, DEFAULTS, D, { regimeVinc: "microbic" })).vincImposable, 13800, 0.01));
-  T.push(expectOk("Micro-BIC : gestion/GLI non déductibles (imposable inchangé)", computeState(Object.assign({}, DEFAULTS, D, { regimeVinc: "microbic", fraisGestionPct: 0.15, gliPct: 0.05 })).vincImposable === 13800));
-  T.push(approx("Frais réels : 0 jour → minimum 1 407 €", computeState(Object.assign({}, DEFAULTS, D, { joursTravail: 0 })).fraisReelsCalc, 1407, 0.01));
-  T.push(approx("Sans frais réels → 14 580 € imposables", computeState(Object.assign({}, DEFAULTS, D, { fraisReels: false })).salFlorieImposable, 14580, 0.01));
-  T.push(approx("Libérale micro-BNC → 11 220 €", computeState(Object.assign({}, DEFAULTS, D, { regimeLib: "micro" })).libImposable, 11220, 0.01));
-  T.push(expectOk("Libérale : charges > CA → plancher 0 €", computeState(Object.assign({}, DEFAULTS, D, { caLib: 1000, autresChargesLib: 0, cotisLib: 0 })).libImposable === 0));
-  T.push(expectOk("Série : horizon + 1 points", base.serie.length === DEFAULTS.horizonMois + 1));
-  T.push(expectOk("Série : point initial = 150 000 €", base.serie[0] === 150000));
-  T.push(expectOk("Edge : loyer nul en nue → clamp 0 €", computeState(Object.assign({}, DEFAULTS, D, { loyerVinc: 0, regimeVinc: "nue" })).vincImposable === 0));
-  T.push(expectOk("Edge : parts = 0 → 1 part, pas de NaN", isFinite(computeState(Object.assign({}, DEFAULTS, D, { parts: 0 })).ir)));
+  T.push(approx("Budget : total revenus = 9 766,38 €/mois (libérale liée : 5 436,38 €)", B.totalRev, 9766.38, 0.01));
+  T.push(approx("Budget : total dépenses fixes = 2 451,98 €/mois (doc 2 602 − provision 150 € supprimée)", B.totalFixes, 2451.98, 0.01));
+  T.push(approx("Budget : total annuelles mensualisées = 866 €/mois (doc)", B.totalAnnuelles, 866, 0.01));
+  T.push(approx("Budget : total catégories = 1 744 €/mois (doc)", B.totalCats, 1744, 0.01));
+  T.push(approx("Budget : reste à vivre = 6 448,40 €/mois", B.resteAVivre, 6448.4, 0.01));
+  T.push(approx("Budget : reste avant impôts = 4 704,40 €/mois", B.reste, 4704.4, 0.01));
+  var M1200 = computeState(Object.assign({}, DP, { rev: [3000, 1330, 1200, 0, 0] }));
+  T.push(approx("Budget manuel (lib 1 200 €) : total revenus = 5 530 €/mois (doc)", M1200.b.totalRev, 5530, 0.01));
+  T.push(approx("Budget manuel (lib 1 200 €) : reste = 468,02 €/mois", M1200.b.reste, 468.02, 0.01));
 
-  var LS = computeLibState(LIBDEFAULTS);
-  T.push(approx("Libérale : fidélité Excel — CA annuel ≈ 100 710,40 € (4 j × 8 séances × 70 €, 7 sem. congés)", LS.caAnnuel, 100710.4, 0.01));
-  T.push(approx("Libérale : cotisations ≈ 23 364,81 € (23,2 % du CA)", LS.cotisAnnuel, 23364.81, 0.01));
-  T.push(approx("Libérale : net annuel ≈ 60 425,59 € (total Excel ligne 44)", LS.netAnnuel, 60425.59, 0.01));
-  T.push(approx("Libérale : net mensuel ≈ 5 035,47 € (salaire moyen Excel)", LS.netMensuel, 5035.47, 0.01));
-  T.push(approx("Libérale : simu 5 séances/jour ≈ 2 618,42 €/mois net (colonne Excel)", computeLibState(Object.assign({}, LIBDEFAULTS, { seancesJour: 5 })).netMensuel, 2618.42, 0.01));
-  T.push(approx("Libérale : 1 bilan/mois → +4 800 € de CA", computeLibState(Object.assign({}, LIBDEFAULTS, { bilansMois: 1 })).caAnnuel - LS.caAnnuel, 4800, 0.01));
-  T.push(approx("Libérale : 0 semaine de congés → 51,96 semaines", computeLibState(Object.assign({}, LIBDEFAULTS, { congesSemaines: 0 })).semaines, 51.96, 0.01));
-  T.push(expectOk("Libérale : congés énormes → semaines clampées à 0, pas de CA négatif", computeLibState(Object.assign({}, LIBDEFAULTS, { congesSemaines: 60 })).semaines === 0));
-  T.push(expectOk("Libérale : charges > CA → net mensuel négatif", computeLibState(Object.assign({}, LIBDEFAULTS, { chargesMensuelles: 20000 })).netMensuel < 0));
-  T.push(expectOk("Libérale : 0 jour/sem et 0 bilan → CA 0 €", computeLibState(Object.assign({}, LIBDEFAULTS, { joursSemaine: 0 })).caAnnuel === 0));
-  T.push(expectOk("Libérale : cohérence net = (CA − cotis − charges)/12", Math.abs(LS.netMensuel * 12 - (LS.caAnnuel - LS.cotisAnnuel - LIBDEFAULTS.chargesMensuelles * 12)) < 0.01));
+  T.push(approx("Vincennes : gestion 5 % + GLI 2,5 % = 2 070 €/an", R.fraisGestion + R.gli, 2070, 0.01));
+  T.push(approx("Vincennes : charges déductibles ≈ 13 459,68 €/an (sans capital amorti)", R.chargesVinc, 13459.68, 0.01));
+  T.push(expectOk("Vincennes : LMNP réel → imposable 0 €", R.vincImposable === 0));
+  T.push(approx("Vincennes nue → 14 140,32 € imposables", computeState(Object.assign({}, DP, { regimeVinc: "nue" })).vincImposable, 14140.32, 0.01));
+  T.push(approx("Vincennes micro-BIC → 13 800 €", computeState(Object.assign({}, DP, { regimeVinc: "microbic" })).vincImposable, 13800, 0.01));
+  T.push(approx("Vincennes nue → PS = 2 432,14 €", computeState(Object.assign({}, DP, { regimeVinc: "nue" })).vincPs, 2432.14, 0.01));
+  T.push(approx("Vincennes : cash flow bloc = −773,09 €/mois (charges courantes incluses)", R.soldeVinc, -773.09, 0.01));
+
+  var S = R.lib;
+  T.push(approx("Libérale : 7 sem. congés → 44,96 semaines travaillées", S.semaines, 44.96, 0.01));
+  T.push(approx("Libérale : CA annuel = 100 710,40 € (fidélité Excel)", S.ca, 100710.4, 0.01));
+  T.push(approx("Libérale réel : cotisations = 18 553,89 € (22 % bénéfice + 120 CFP)", S.cotis, 18553.89, 0.01));
+  T.push(approx("Libérale réel : bénéfice imposable = 65 236,51 € (cotis déductibles)", S.imposable, 65236.51, 0.01));
+  T.push(approx("Libérale réel : net avant impôt = 5 436,38 €/mois", S.netMois, 5436.38, 0.01));
+
+  var LM = computeLib(Object.assign({}, DP.lib, { regime: "micro" }));
+  T.push(approx("Libérale micro : cotisations = 23 484,81 € (23,2 % + 120 CFP)", LM.cotis, 23484.81, 0.01));
+  T.push(approx("Libérale micro : imposable = 66 468,86 € (CA × 0,66)", LM.imposable, 66468.86, 0.01));
+  T.push(approx("Libérale micro ACRE : cotisations = 17 643,61 € (17,4 %)", computeLib(Object.assign({}, DP.lib, { regime: "micro", acre: true })).cotis, 17643.61, 0.01));
+  T.push(approx("Libérale micro VL : IR libérale = 2 215,63 € (2,2 % CA)", computeLib(Object.assign({}, DP.lib, { regime: "micro", vl: true })).irLib, 2215.63, 0.01));
+  T.push(expectOk("Libérale micro > 83 600 € → avertissement seuil (réel obligatoire)", !computeLib(Object.assign({}, DP.lib, { regime: "micro" })).microOk));
+  T.push(approx("Libérale réel 5 séances/jour → net 2 981,56 €/mois", computeLib(Object.assign({}, DP.lib, { seances: 5 })).netMois, 2981.56, 0.01));
+  T.push(approx("Libérale micro 5 séances/jour → net 2 608,42 €/mois", computeLib(Object.assign({}, DP.lib, { regime: "micro", seances: 5 })).netMois, 2608.42, 0.01));
+  T.push(approx("Libérale : 1 bilan/mois → +4 800 € de CA", computeLib(Object.assign({}, DP.lib, { bilans: 1 })).ca - S.ca, 4800, 0.01));
+  T.push(approx("Libérale : 0 congé → 51,96 semaines", computeLib(Object.assign({}, DP.lib, { conges: 0 })).semaines, 51.96, 0.01));
+  T.push(expectOk("Libérale : congés énormes → semaines clampées à 0", computeLib(Object.assign({}, DP.lib, { conges: 60 })).semaines === 0));
+  var big = computeLib(Object.assign({}, DP.lib, { charges: 20000 }));
+  T.push(approx("Libérale : charges > CA → cotisations = CFP seul (120 €)", big.cotis, 120, 0.01));
+  T.push(expectOk("Libérale : charges > CA → net négatif", big.netMois < 0));
+  T.push(expectOk("Libérale : 0 jour/sem et 0 bilan → CA 0 €", computeLib(Object.assign({}, DP.lib, { jours: 0 })).ca === 0));
+
+  T.push(approx("Foyer : RNI par défaut = 99 886,51 €", R.rni, 99886.51, 0.01));
+  T.push(approx("Foyer : IR par défaut = 9 175,68 € (3 parts)", R.ir, 9175.68, 0.01));
+  T.push(approx("Foyer : IR — salaire Adrien (prorata) = 3 182,99 €", R.irAdr, 3182.99, 0.01));
+  T.push(approx("Foyer : IR — psychologue libérale (prorata) = 5 992,70 €", R.irLibP, 5992.7, 0.01));
+  T.push(expectOk("Foyer : somme des IR prorata = IR total", Math.abs(R.irAdr + R.irFlo + R.irLibP + R.irVinc - R.ir) < 0.01));
+  T.push(approx("Foyer : impôts totaux (IR + PS) = 9 175,68 €", R.impotsCalc, 9175.68, 0.01));
+  T.push(approx("Foyer : cash flow ① = 3 939,76 €/mois (libérale liée)", R.soldeFoyer, 3939.76, 0.01));
+  T.push(approx("Global : cash flow total = 3 166,67 €/mois", R.soldeMensuel, 3166.67, 0.01));
+  T.push(approx("Global : épargne à 120 mois = 530 000,36 €", R.epargneFin, 530000.36, 0.01));
+  T.push(approx("Manuel (lib 1 200 €) : cash flow ① = −296,62 €/mois", M1200.soldeFoyer, -296.62, 0.01));
+  T.push(approx("Manuel (lib 1 200 €) : cash flow global = −1 069,71 €/mois", M1200.soldeMensuel, -1069.71, 0.01));
+  var VLst = computeState(Object.assign({}, DP, { lib: Object.assign({}, DP.lib, { regime: "micro", vl: true }) }));
+  T.push(approx("VL micro-BNC 2,2 % : impôts = 2 215,63 € (IR barème 0 + VL)", VLst.impotsCalc, 2215.63, 0.01));
+  var lib5 = computeLib(Object.assign({}, DP.lib, { jours: 5 }));
+  var J5 = computeState(Object.assign({}, DP, {
+    lib: Object.assign({}, DP.lib, { jours: 5 }),
+    rev: [3000, 1330, Math.round(lib5.netMois * 100) / 100, 0, 0]
+  }));
+  T.push(expectOk("Logique : CA libérale ↑ (4 → 5 j/sem) → cash flow global ↑ (liaison auto)", J5.soldeMensuel > R.soldeMensuel));
+  T.push(expectOk("Cohérence : ① + ② = cash flow global", Math.abs(R.soldeFoyer + R.soldeVinc - R.soldeMensuel) < 0.01));
+  T.push(expectOk("Cohérence : somme des flux = cash flow global", Math.abs(R.composants.reduce(function (s, c) { return s + c.flux; }, 0) - R.soldeMensuel) < 0.01));
+  T.push(expectOk("Épargne : horizon + 1 points", R.serie.length === DP.horizonMois + 1));
+  T.push(expectOk("Épargne : point initial = 150 000 €", R.serie[0] === 150000));
+  T.push(expectOk("Edge : parts = 0 → 1 part, pas de NaN", isFinite(computeState(Object.assign({}, DP, { parts: 0 })).ir)));
+  T.push(approx("Frais réels : 0 jour → minimum 1 407 €", computeState(Object.assign({}, DP, { joursTravail: 0 })).fraisReelsCalc, 1407, 0.01));
+  T.push(approx("Sans frais réels → 14 580 € imposables", computeState(Object.assign({}, DP, { fraisReels: false })).salFlorieImposable, 14580, 0.01));
+
   return T;
 }
 
@@ -730,37 +1025,88 @@ function renderTests() {
   var all = passed === T.length;
   var html = '<p><span class="badge ' + (all ? "green" : "red") + '">' + passed + "/" + T.length + " réussis</span></p>";
   html += T.map(function (t) {
-    return '<div class="test-line">' + (t.ok ? "✅" : "❌") + " " + t.name + (t.detail ? ' <span style="color:#b91c1c;font-size:12px">— ' + t.detail + "</span>" : "") + "</div>";
+    return '<div class="test-line">' + (t.ok ? "✅" : "❌") + " " + t.name +
+      (t.detail ? ' <span style="color:#C22030;font-size:11.5px">— ' + t.detail + "</span>" : "") + "</div>";
   }).join("");
   document.getElementById("tests").innerHTML = html;
 }
 
+/* ============ Scénarios (localStorage — 100 % client) ============ */
+var SCEN_KEY = "simuCashflowScenarios";
+var scenMemory = {};
+var scenStorageOk = true;
+
+function scenStore() {
+  if (!scenStorageOk) return scenMemory;
+  try {
+    var raw = localStorage.getItem(SCEN_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { scenStorageOk = false; return scenMemory; }
+}
+function scenPersist(store) {
+  if (scenStorageOk) {
+    try { localStorage.setItem(SCEN_KEY, JSON.stringify(store)); return; } catch (e) { scenStorageOk = false; }
+  }
+  scenMemory = store;
+}
+function snapshotInputs() {
+  var out = {};
+  document.querySelectorAll("input[id], select[id]").forEach(function (el) {
+    if (el.type === "file" || el.id.indexOf("scen-") === 0) return;
+    if (el.type === "checkbox") out[el.id] = el.checked; else out[el.id] = el.value;
+  });
+  return out;
+}
+function applyInputs(data) {
+  Object.keys(data).forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el || el.type === "file" || el.id.indexOf("scen-") === 0) return;
+    if (el.type === "checkbox") el.checked = !!data[id];
+    else el.value = data[id];
+  });
+  renderAll();
+}
+function scenRefresh(feedback) {
+  var store = scenStore();
+  var sel = document.getElementById("scen-list");
+  var names = Object.keys(store).sort();
+  sel.innerHTML = '<option value="">— Rejouer un scénario —</option>' +
+    names.map(function (n) {
+      return '<option value="' + n.replace(/"/g, "&quot;") + '">' + n + " (" + (store[n].saved || "").slice(0, 10) + ")</option>";
+    }).join("");
+  document.getElementById("scen-status").textContent = feedback !== undefined ? feedback :
+    (names.length + " scénario(s) — " + (scenStorageOk
+      ? "enregistrés dans ce navigateur"
+      : "⚠️ stockage indisponible ici (aperçu) : en mémoire seulement"));
+}
+
 /* ============ Initialisation ============ */
 (function init() {
-  var ids = Object.keys(DEFAULTS).filter(function (k) { return k !== "regimeVinc" && k !== "regimeLib" && k !== "fraisReels" && k !== "mobilier"; });
-  ids.forEach(function (k) {
-    var el = document.getElementById(k);
-    if (el) el.value = DEFAULTS[k];
-  });
-  document.getElementById("regimeVinc").value = DEFAULTS.regimeVinc;
-  document.getElementById("regimeLib").value = DEFAULTS.regimeLib;
-  document.getElementById("fraisReels").checked = DEFAULTS.fraisReels;
-  Object.keys(LIBDEFAULTS).forEach(function (k) {
-    var el = document.getElementById(k);
-    if (el) el.value = LIBDEFAULTS[k];
-  });
-  enhanceNumberInputs();
+  buildBudgetTable("tbody-fix", FIX_LINES, "fix", "fix", "Total dépenses mensuelles fixes");
+  buildBudgetTable("tbody-ann", ANN_LINES, "ann", "ann", "Total dépenses annuelles fixes");
+  buildBudgetTable("tbody-cat", CAT_LINES, "cat", "cat", "Total autres dépenses mensuelles");
 
-  var inputs = document.querySelectorAll(".wrap input, .wrap select");
-  Array.prototype.forEach.call(inputs, function (el) {
-    var handler = function () {
+  document.querySelectorAll(".nav-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll(".page").forEach(function (pg) { pg.classList.remove("on"); });
+      document.querySelectorAll(".nav-btn").forEach(function (x) { x.classList.remove("act"); });
+      document.getElementById(b.dataset.page).classList.add("on");
+      b.classList.add("act");
+    });
+  });
+
+  var handler = function (el) {
+    return function () {
       var m = el.id.match(/^(.+)-r$/);
       if (m && document.getElementById(m[1])) document.getElementById(m[1]).value = el.value;
-      render();
-      renderLib();
+      renderAll();
     };
-    el.addEventListener("input", handler);
-    el.addEventListener("change", handler);
+  };
+  document.addEventListener("input", function (ev) {
+    if (ev.target.matches("input, select")) handler(ev.target)();
+  });
+  document.addEventListener("change", function (ev) {
+    if (ev.target.matches("input, select")) handler(ev.target)();
   });
 
   document.getElementById("btn-export").addEventListener("click", function () {
@@ -776,7 +1122,8 @@ function renderTests() {
     try { document.execCommand("copy"); } catch (e) {}
     try { if (navigator.clipboard) navigator.clipboard.writeText(ta.value); } catch (e) {}
     this.textContent = "✓ Copié !";
-    var b = this; setTimeout(function () { b.textContent = "Copier le CSV"; }, 2000);
+    var b = this;
+    setTimeout(function () { b.textContent = "Copier le CSV"; }, 2000);
   });
   document.getElementById("btn-download").addEventListener("click", function () {
     try {
@@ -787,24 +1134,77 @@ function renderTests() {
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
     } catch (e) {
-      alert("Téléchargement bloqué dans cet aperçu : utilisez « Copier le CSV », ou téléchargez d'abord le fichier HTML puis ouvrez-le dans votre navigateur.");
+      alert("Téléchargement bloqué : utilisez « Copier le CSV ».");
     }
   });
 
-  document.getElementById("btn-lib-push").addEventListener("click", function () {
-    var l = readLibParams();
-    var s = computeLibState(l);
-    document.getElementById("caLib").value = Math.round(s.caAnnuel);
-    document.getElementById("cotisLib").value = Math.round(s.cotisAnnuel);
-    document.getElementById("autresChargesLib").value = Math.round(l.chargesMensuelles * 12);
-    render();
-    this.textContent = "✓ Envoyé dans le simulateur foyer";
-    var b = this;
-    setTimeout(function () { b.textContent = "→ Utiliser dans le simulateur foyer"; }, 2500);
+  window.addEventListener("beforeprint", function () {
+    var d = document.getElementById("tests-details");
+    if (d) d.open = true;
   });
 
-  renderLib();
-  render();
+  /* Scénarios */
+  document.getElementById("btn-scen-save").addEventListener("click", function () {
+    var name = document.getElementById("scen-name").value.trim();
+    if (!name) name = "Scénario " + new Date().toLocaleDateString("fr-FR") +
+      " " + new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+    var store = scenStore();
+    store[name] = { saved: new Date().toISOString(), params: snapshotInputs() };
+    scenPersist(store);
+    document.getElementById("scen-name").value = "";
+    document.getElementById("scen-list").value = name;
+    scenRefresh("✓ « " + name + " » sauvegardé — sélectionnez-le pour le rejouer");
+  });
+  document.getElementById("scen-list").addEventListener("change", function () {
+    if (!this.value) return;
+    var store = scenStore();
+    if (store[this.value]) {
+      applyInputs(store[this.value].params);
+      scenRefresh("▶ « " + this.value + " » rejoué");
+    }
+  });
+  document.getElementById("btn-scen-del").addEventListener("click", function () {
+    var sel = document.getElementById("scen-list");
+    if (!sel.value) { scenRefresh("Sélectionnez d'abord un scénario à supprimer"); return; }
+    var store = scenStore();
+    delete store[sel.value];
+    scenPersist(store);
+    scenRefresh("🗑 « " + sel.value + " » supprimé");
+  });
+  document.getElementById("btn-scen-exp").addEventListener("click", function () {
+    var store = scenStore();
+    try {
+      var blob = new Blob([JSON.stringify(store, null, 2)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url; a.download = "scenarios-cashflow.json";
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      scenRefresh("⬇ " + Object.keys(store).length + " scénario(s) exporté(s)");
+    } catch (e) { scenRefresh("Export bloqué dans cet aperçu — fonctionne sur GitHub Pages"); }
+  });
+  document.getElementById("btn-scen-imp").addEventListener("click", function () {
+    document.getElementById("scen-file").click();
+  });
+  document.getElementById("scen-file").addEventListener("change", function (ev) {
+    var f = ev.target.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var imported = JSON.parse(reader.result);
+        var store = scenStore();
+        Object.keys(imported).forEach(function (n) { store[n] = imported[n]; });
+        scenPersist(store);
+        scenRefresh("⬆ " + Object.keys(imported).length + " scénario(s) importé(s)");
+      } catch (e) { scenRefresh("⚠️ Fichier JSON invalide"); }
+    };
+    reader.readAsText(f);
+    ev.target.value = "";
+  });
+  scenRefresh();
+
+  renderAll();
   renderTests();
 })();
 </script>
